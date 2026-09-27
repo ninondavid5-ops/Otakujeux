@@ -11,7 +11,7 @@
 #message{position:fixed;left:50%;bottom:105px;transform:translateX(-50%);display:none;max-width:90%;text-align:center}
 #intro{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 30%,#314979,#060a10 72%)}.introbox{max-width:720px;padding:28px}.introbox h1{font-size:clamp(42px,10vw,86px);margin:0;letter-spacing:-3px}.accent{color:#a98bff}.introbox p{line-height:1.6;color:#c7d0e2}.start{cursor:pointer;background:#8d6cff;color:#fff;border:0;border-radius:12px;padding:16px 26px;font-size:18px;font-weight:900;box-shadow:0 8px 30px #0008}.start:disabled{opacity:.55;cursor:wait}
 #dialog{display:none;position:fixed;left:4%;right:4%;bottom:20px;z-index:15}.choice{margin:8px 6px 0 0;padding:9px 13px;border-radius:9px;border:1px solid #7568b8;background:#282246;color:#fff}
-#touch{position:fixed;left:14px;right:14px;bottom:14px;display:flex;justify-content:space-between;pointer-events:none}.dpad{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:48px 48px 48px;gap:3px;pointer-events:auto}.dpad button,.acts button{background:#111827e8;color:#fff;border:1px solid #687594;border-radius:12px;font-weight:900}.up{grid-column:2}.l{grid-column:1;grid-row:2}.d{grid-column:2;grid-row:2}.r{grid-column:3;grid-row:2}.acts{display:flex;gap:7px;align-items:end;pointer-events:auto}.acts button{width:60px;height:60px}.atk{border-color:#b178ff!important}
+#touch{position:fixed;left:14px;right:14px;bottom:14px;display:flex;justify-content:space-between;pointer-events:none}.dpad{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:48px 48px 48px;gap:3px;pointer-events:auto}.dpad button,.acts button{background:#111827e8;color:#fff;border:1px solid #687594;border-radius:12px;font-weight:900}.up{grid-column:2}.l{grid-column:1;grid-row:2}.d{grid-column:2;grid-row:2}.r{grid-column:3;grid-row:2}.acts{display:flex;gap:7px;align-items:end;pointer-events:auto}.acts button{width:58px;height:58px}.atk{border-color:#b178ff!important}
 </style>
 </head>
 <body>
@@ -19,15 +19,15 @@
 <div id="hud"><div class="top"><div id="stats" class="box left"></div><div id="quest" class="box right"></div></div></div>
 <div id="message" class="box"></div>
 <div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText"></div><div id="choices"></div></div>
-<div id="touch"><div class="dpad"><button class="up" data-key="w">▲</button><button class="l" data-key="a">◀</button><button class="d" data-key="s">▼</button><button class="r" data-key="d">▶</button></div><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
-<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · TEST BUILD</h2><p>Entre directement dans un monde fantasy 3D avec de vrais personnages humanoïdes riggés et animés. Cette version est destinée aux premiers testeurs.</p><p id="loadStatus" class="small">Chargement du monde et des personnages…</p><button id="start" class="start" disabled>CHARGEMENT…</button><p class="small">WASD / flèches · ESPACE : attaque · E : parler · P : potion</p></div></div>
+<div id="touch"><div class="dpad"><button class="up" data-key="w">▲</button><button class="l" data-key="a">◀</button><button class="d" data-key="s">▼</button><button class="r" data-key="d">▶</button></div><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button data-act="skill">SKILL</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
+<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · TEST BUILD</h2><p>Explore un monde fantasy 3D vivant : village, cité fortifiée, forêt, rivière, ruines, montagnes, donjon et plusieurs familles de créatures. Aren et Lyra sont de vrais personnages humanoïdes riggés et animés. Cette version est conçue pour les premiers testeurs.</p><p id="loadStatus" class="small">Chargement du monde et des personnages…</p><button id="start" class="start" disabled>CHARGEMENT…</button><p class="small">WASD / flèches · ESPACE : attaque · E : interaction · P : potion · K : compétence</p></div></div>
 <script src="vendor/three.min.js"></script>
 <script src="vendor/GLTFLoader.js"></script>
 <script>
 (function(){
  const status=document.getElementById('loadStatus'),start=document.getElementById('start');
  if(!window.THREE){status.textContent='Moteur 3D indisponible.';return}
- const s=document.createElement('script');s.src='game.js?v=testbuild2';
+ const s=document.createElement('script');s.src='game.js?v=renaissance-overhaul-1';
  s.onload=()=>status.textContent='Personnages et monde chargés. Prêt à jouer.';
  s.onerror=()=>status.textContent='Le jeu n’a pas pu démarrer. Recharge la page.';
  document.body.appendChild(s);
