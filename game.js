@@ -100,35 +100,90 @@ function fire(x,z){
 }
 fire(-5,-11);fire(5,-11);fire(-19,-12);fire(19,-12);
 
-function makeAren(){
- const g=new T.Group();g.userData.name='Aren';
- const skin=M(0xd99578,.65), hair=M(0x18233a,.55), blue=M(0x243d73,.7), steel=M(0x8295ae,.45, .45), gold=M(0xd4a94b,.4,.5), dark=M(0x242536);
- const torso=box(1.15,1.5,.7,blue);torso.position.y=1.45;g.add(torso);
- const armor=box(1.25,.42,.78,steel);armor.position.y=1.95;g.add(armor);
- const head=sph(.52,skin);head.position.y=2.65;g.add(head);
- const hairTop=sph(.6,hair);hairTop.scale.set(1, .72, 1);hairTop.position.set(0,2.92,0);g.add(hairTop);
- for(let i=0;i<7;i++){const spike=cone(.16,.55,hair,5);spike.rotation.z=(i-3)*.18;spike.position.set((i-3)*.13,3.05,.1);g.add(spike)}
- for(const sx of [-1,1]){const arm=box(.3,1.35, .35,blue);arm.position.set(sx*.78,1.45,0);arm.rotation.z=sx*.12;g.add(arm);const pa=box(.38,.28,.5,steel);pa.position.set(sx*.78,1.95,0);g.add(pa);const leg=box(.4,1.3,.4,dark);leg.position.set(sx*.3,.15,0);g.add(leg);const boot=box(.48,.3,.72,steel);boot.position.set(sx*.3,-.48,.15);g.add(boot)}
- const belt=box(1.25,.18,.75,gold);belt.position.y=.78;g.add(belt);
- const cape=box(1.5,2.2,.08,M(0x18254d));cape.position.set(0,1.45,-.48);g.add(cape);
- const sword=new T.Group();const blade=box(.16,2.8,.12,M(0xbfeaff,.2,.8));blade.position.y=1.4;sword.add(blade);const guard=box(.8,.12,.18,gold);guard.position.y=.1;sword.add(guard);const grip=box(.18,.65,.18,dark);grip.position.y=-.3;sword.add(grip);sword.position.set(1.25,1.1,.15);sword.rotation.z=-.22;g.add(sword);g.userData.sword=sword;
- const eye=M(0x17233a);for(const sx of [-.17,.17]){const e=sph(.055,eye);e.position.set(sx,2.68,.48);g.add(e)}
- g.traverse(o=>{if(o.isMesh)o.castShadow=o.receiveShadow=true});return g
+function emptyHero(name){
+ const g=new T.Group();g.userData.name=name;return g
 }
-function makeLyra(){
- const g=new T.Group();g.userData.name='Lyra';
- const skin=M(0xe3aa91,.6), hair=M(0xa94731,.5), purple=M(0x573069,.7), gold=M(0xd5a64d,.4,.5), white=M(0xe8d9cf,.7);
- const torso=box(1.05,1.45,.65,purple);torso.position.y=1.4;g.add(torso);
- const head=sph(.5,skin);head.position.y=2.58;g.add(head);
- const hairBack=sph(.72,hair);hairBack.scale.set(.9,1.15,.65);hairBack.position.set(0,2.55,-.18);g.add(hairBack);
- for(const sx of [-1,1]){const lock=cyl(.18,1.8,hair,10);lock.position.set(sx*.58,2.1,.02);lock.rotation.z=sx*.18;g.add(lock)}
- const cape=box(1.45,1.9, .08,white);cape.position.set(0,1.25,-.45);g.add(cape);
- for(const sx of [-1,1]){const arm=box(.28,1.2,purple);arm.position.set(sx*.72,1.4,0);arm.rotation.z=sx*.08;g.add(arm);const leg=box(.38,1.25,purple);leg.position.set(sx*.28,.12,0);g.add(leg);const boot=box(.46,.3,.7,gold);boot.position.set(sx*.28,-.5,.15);g.add(boot)}
- const belt=box(1.1,.18,.68,gold);belt.position.y=.76;g.add(belt);
- const staff=new T.Group();const pole=cyl(.08,3.5,M(0x5b3b2b),10);pole.position.y=1.7;staff.add(pole);const orb=sph(.35,glow(0x55cfff));orb.position.y=3.55;staff.add(orb);const aura=sph(.65,glow(0x4b8dff));aura.position.y=3.55;aura.scale.z=.25;staff.add(aura);staff.position.set(.85,0,.15);staff.rotation.z=-.08;g.add(staff);g.userData.staff=staff;
- const eye=M(0x432338);for(const sx of [-.16,.16]){const e=sph(.055,eye);e.position.set(sx,2.61,.46);g.add(e)}
- g.traverse(o=>{if(o.isMesh)o.castShadow=o.receiveShadow=true});return g
+
+const S=Object.assign({level:1,xp:0,hp:100,maxHp:100,gold:25,rep:0,guild:0,bond:15,potions:2,stage:0,kills:0},JSON.parse(localStorage.getItem('otaku3d')||'{}'));
+const player={x:0,z:18,model:emptyHero('Aren'),walking:false,attack:0,ready:false,mixer:null,actions:{}};
+const lyra={x:-3,z:4,model:emptyHero('Lyra'),walking:false,ready:false,mixer:null,actions:{}};
+player.model.position.set(0,0,18);lyra.model.position.set(-3,0,4);scene.add(player.model,lyra.model);
+
+const realMixers=[];
+function fitRealCharacter(obj,targetHeight=3.1){
+ const box3=new T.Box3().setFromObject(obj),size=box3.getSize(new T.Vector3());
+ if(size.y>0)obj.scale.multiplyScalar(targetHeight/size.y);
+ const b2=new T.Box3().setFromObject(obj);
+ obj.position.y-=b2.min.y;
+ obj.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;n.frustumCulled=false;}});
 }
+function openAssetDB(){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open('otakujeux-assets-v1',1);
+  req.onupgradeneeded=()=>req.result.createObjectStore('models');
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error);
+ });
+}
+async function getAsset(name){
+ try{const db=await openAssetDB();return await new Promise((resolve,reject)=>{const q=db.transaction('models','readonly').objectStore('models').get(name);q.onsuccess=()=>resolve(q.result||null);q.onerror=()=>reject(q.error)})}
+ catch(e){return null}
+}
+async function putAsset(name,buffer){
+ const db=await openAssetDB();
+ await new Promise((resolve,reject)=>{const q=db.transaction('models','readwrite').objectStore('models').put(buffer,name);q.onsuccess=resolve;q.onerror=()=>reject(q.error)});
+}
+function characterActions(gltf,model,target){
+ if(!gltf.animations||!gltf.animations.length)return;
+ const mixer=new T.AnimationMixer(model),actions={};
+ gltf.animations.forEach(c=>actions[c.name]=mixer.clipAction(c));
+ const find=(rx)=>Object.entries(actions).find(([n])=>rx.test(n))?.[1];
+ target.mixer=mixer;
+ target.actions={idle:find(/idle|stand|breath/i)||gltf.animations[0]?mixer.clipAction(find(/idle|stand|breath/i)||gltf.animations[0]):null,
+  walk:find(/walk|run|locomotion/i),attack:find(/attack|slash|combat/i)};
+ if(target.actions.idle)target.actions.idle.play();
+ realMixers.push(mixer);
+}
+function replaceHero(target,gltf,targetHeight){
+ const model=gltf.scene;
+ fitRealCharacter(model,targetHeight);
+ model.rotation.y=Math.PI;
+ const pos=target.model.position.clone();
+ scene.remove(target.model);
+ target.model=model;target.model.position.copy(pos);
+ scene.add(model);
+ target.ready=true;
+ characterActions(gltf,model,target);
+ updateAssetGate();
+}
+function loadCharacterBuffer(target,buffer,targetHeight){
+ if(!T.GLTFLoader||!buffer)return;
+ const blob=new Blob([buffer],{type:'model/gltf-binary'});
+ const url=URL.createObjectURL(blob);
+ const loader=new T.GLTFLoader();
+ loader.load(url,gltf=>{URL.revokeObjectURL(url);replaceHero(target,gltf,targetHeight)},undefined,err=>{URL.revokeObjectURL(url);console.warn('GLB invalide',err);assetStatus('Erreur de chargement du GLB. Utilise un GLB humanoïde riggé.');});
+}
+async function loadStoredCharacters(){
+ const [a,l]=await Promise.all([getAsset('aren'),getAsset('lyra')]);
+ if(a)loadCharacterBuffer(player,a,3.15);
+ if(l)loadCharacterBuffer(lyra,l,3.0);
+ updateAssetGate();
+}
+function assetStatus(t){const e=document.getElementById('assetStatus');if(e)e.textContent=t}
+function updateAssetGate(){
+ const ok=!!(player.ready&&lyra.ready);
+ if(start){start.disabled=!ok;start.textContent=ok?'ENTRER DANS LE MONDE':'IMPORTER LES 2 PERSONNAGES';}
+ if(ok)assetStatus('✓ Aren et Lyra sont chargés comme vrais modèles humanoïdes 3D.');
+ else assetStatus('Deux GLB humanoïdes riggés sont nécessaires : Aren + Lyra.');
+}
+function bindCharacterInputs(){
+ const pairs=[['arenFile','aren',player,3.15],['lyraFile','lyra',lyra,3.0]];
+ pairs.forEach(([id,key,target,height])=>{
+  const input=document.getElementById(id);if(!input)return;
+  input.onchange=async()=>{const f=input.files?.[0];if(!f)return;if(!/\\.glb$/i.test(f.name)){assetStatus('Utilise uniquement un fichier .GLB.');return}const buf=await f.arrayBuffer();await putAsset(key,buf);loadCharacterBuffer(target,buf,height);};
+ });
+}
+bindCharacterInputs();loadStoredCharacters();
 
 const S=Object.assign({level:1,xp:0,hp:100,maxHp:100,gold:25,rep:0,guild:0,bond:15,potions:2,stage:0,kills:0},JSON.parse(localStorage.getItem('otaku3d')||'{}'));
 const player={x:0,z:18,model:makeAren(),walking:false,attack:0};const lyra={x:-3,z:4,model:makeLyra()};player.model.position.set(0,0,18);lyra.model.position.set(-3,0,4);
@@ -213,14 +268,18 @@ function interact(){if(!started||dialog)return;if(Math.hypot(player.x-lyra.x,pla
 function potion(){if(S.potions<=0)return toast('Plus de potion.');if(S.hp>=S.maxHp)return toast('PV au maximum.');S.potions--;S.hp=Math.min(S.maxHp,S.hp+45);save();toast('🧪 +45 PV')}
 function attack(){if(!started||dialog||attackCd>0)return;attackCd=.48;let best=null,bd=3.4;for(const e of enemies){const d=Math.hypot(player.x-e.x,player.z-e.z);if(d<bd){bd=d;best=e}}if(!best)return toast('Aucun ennemi à portée.');best.hp-=20+S.level*5;player.attack=.25;toast('⚔️ Coup porté');if(best.hp<=0){scene.remove(best.model);enemies.splice(enemies.indexOf(best),1);S.kills++;S.gold+=10;S.rep+=3;S.guild+=2;gainxp(28);if(S.stage===2&&S.kills>=3){S.stage=3;toast('Mission terminée ! Retourne voir Lyra.')}save()}}
 function animate(t){
- const walk=player.walking,s=Math.sin(t*9)*.35;
- const parts=player.model.children;if(walk){parts.forEach((o,i)=>{if(i===5||i===7)o.rotation.x=s*(i===5?1:-1)})}
- if(player.attack>0){player.attack-=.016;player.model.userData.sword.rotation.z=-.22-Math.sin((.25-player.attack)*12)*.8}
- else player.model.userData.sword.rotation.z=-.22;
- lyra.model.userData.staff.rotation.y=Math.sin(t*2)*.12;lyra.model.userData.staff.children[1].scale.setScalar(1+.12*Math.sin(t*4));
+ if(player.mixer)player.mixer.update(1/60);
+ if(lyra.mixer)lyra.mixer.update(1/60);
+ const pa=player.actions;
+ if(pa){
+  const wanted=player.attack>0?pa.attack:(player.walking?pa.walk:pa.idle);
+  if(wanted&&!wanted.isRunning())Object.values(pa).filter(Boolean).forEach(a=>a.stop());
+  if(wanted&&!wanted.isRunning())wanted.reset().fadeIn(.12).play();
+ }
+ if(player.attack>0)player.attack=Math.max(0,player.attack-.016);
 }
 function startGame(){started=true;document.getElementById('intro').style.display='none';toast('Bienvenue à Renaissance. Retrouve Lyra.')}
-start.onclick=startGame;start.disabled=false;start.textContent='ENTRER DANS LE MONDE';status.textContent='Monde fantasy 3D prêt.';hud();
+start.onclick=startGame;updateAssetGate();status.textContent='Monde 3D prêt. Les personnages attendent leurs GLB humanoïdes.';hud();
 addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' '){e.preventDefault();attack()}if(e.key.toLowerCase()==='e')interact();if(e.key.toLowerCase()==='p')potion()});
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.onpointerdown=e=>{e.preventDefault();keys[k]=true};b.onpointerup=b.onpointercancel=b.onpointerleave=()=>keys[k]=false});
