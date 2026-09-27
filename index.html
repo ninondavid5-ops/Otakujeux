@@ -18,15 +18,24 @@
 <div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText" style="margin-top:6px"></div><div id="choices"></div></div>
 <div id="touch"><div class="dpad"><button class="up" data-key="w">▲</button><button class="l" data-key="a">◀</button><button class="d" data-key="s">▼</button><button class="r" data-key="d">▶</button></div><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
 <div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · 3D</h2><p>Tu es Aren. Réincarné dans un monde fantastique, tu pars d'une ferme où tu as grandi dans la servitude. Retrouve Lyra, entre dans la guilde et forge ton propre nom.</p><p class="small">Déplacement : WASD / flèches · Caméra : souris · E : interaction · ESPACE : attaque · P : potion</p><button class="start" id="start">ENTRER DANS LE MONDE</button></div></div>
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
+<script src="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.180.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+if (typeof THREE === 'undefined') {
+  document.getElementById('start').onclick = () => {
+    document.querySelector('.introbox p').textContent = 'Le moteur 3D n’a pas pu être chargé. Vérifie ta connexion Internet puis recharge la page.';
+    document.getElementById('start').textContent = 'RECHARGER';
+    document.getElementById('start').onclick = () => location.reload();
+  };
+  throw new Error('Three.js non chargé');
+}
+
 
 const root=document.getElementById('game');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x86b7d9);scene.fog=new THREE.Fog(0x86b7d9,35,115);
 const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,300);camera.position.set(7,7,10);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;root.appendChild(renderer.domElement);
-const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=5;controls.maxDistance=13;controls.maxPolarAngle=Math.PI*.47;controls.minPolarAngle=.35;controls.target.set(0,1,0);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=5;controls.maxDistance=13;controls.maxPolarAngle=Math.PI*.47;controls.minPolarAngle=.35;controls.target.set(0,1,0);
 scene.add(new THREE.HemisphereLight(0xbad8ff,0x31422b,2.1));const sun=new THREE.DirectionalLight(0xfff0ce,3);sun.position.set(-25,35,15);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
 
 const S=Object.assign({level:1,xp:0,hp:100,maxHp:100,gold:25,rep:0,guild:0,bond:15,potions:2,stage:0,kills:0},JSON.parse(localStorage.getItem('otaku3d')||'{}'));
@@ -59,7 +68,15 @@ buildWorld();initActors();for(let i=0;i<6;i++)spawnMonster();hud();
 addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' '){e.preventDefault();attack()}if(e.key.toLowerCase()==='e')interact();if(e.key.toLowerCase()==='p')potion()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 document.querySelectorAll('[data-key]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();keys[b.dataset.key]=true});['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,()=>keys[b.dataset.key]=false))});
 document.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('pointerdown',()=>({attack,potion,interact}[b.dataset.act])()));
-document.getElementById('start').onclick=()=>{started=true;document.getElementById('intro').style.display='none';toast('Bienvenue dans Renaissance 3D. Retrouve Lyra.');};
+document.getElementById('start').onclick=()=>{window.__otakuStarted=true;started=true;document.getElementById('intro').style.display='none';toast('Bienvenue dans Renaissance 3D. Retrouve Lyra.');};
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 animate();
+</script><script>
+// Démarrage de secours : le bouton réagit même si une erreur survient ensuite.
+window.addEventListener('error', function(e){
+  if(!window.__otakuStarted){
+    const btn=document.getElementById('start');
+    if(btn){btn.textContent='RECHARGER LE JEU';btn.onclick=()=>location.reload();}
+  }
+});
 </script></body></html>
