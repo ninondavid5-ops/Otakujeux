@@ -1,14 +1,15 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>OTAKUJEUX — Renaissance</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08111b;color:#fff;font-family:system-ui,Arial}
 #game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%;touch-action:none}
-#hud{position:fixed;inset:0;padding:12px;pointer-events:none}.top{display:flex;justify-content:space-between;gap:10px}.box{background:#07101bdd;border:1px solid #71809c;border-radius:14px;padding:9px 12px;backdrop-filter:blur(6px)}.left{width:280px}.right{width:310px;text-align:right}.title{font-weight:900}.bar{height:8px;background:#252b38;border-radius:8px;margin-top:4px;overflow:hidden}.hp{height:100%;background:#e85d70}.xp{height:100%;background:#8b6cff}.small{font-size:12px;color:#bec8da}
+#hud{position:fixed;inset:0;padding:12px;pointer-events:none}.top{display:flex;justify-content:space-between;gap:10px}.box{background:#07101ddd;border:1px solid #71809c;border-radius:14px;padding:9px 12px;backdrop-filter:blur(6px)}.left{width:280px}.right{width:310px;text-align:right}.title{font-weight:900}.bar{height:8px;background:#252b38;border-radius:8px;margin-top:4px;overflow:hidden}.hp{height:100%;background:#e85d70}.xp{height:100%;background:#8b6cff}.small{font-size:12px;color:#bec8da}
 #message{position:fixed;left:50%;bottom:105px;transform:translateX(-50%);display:none;max-width:90%;text-align:center}
-#intro{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 30%,#314979,#060a10 72%)}.introbox{max-width:720px;padding:28px}.introbox h1{font-size:clamp(42px,10vw,86px);margin:0;letter-spacing:-3px}.accent{color:#a98bff}.introbox p{line-height:1.6;color:#c7d0e2}.start{cursor:pointer;background:#8d6cff;color:#fff;border:0;border-radius:12px;padding:16px 26px;font-size:18px;font-weight:900;box-shadow:0 8px 30px #0008}
+#intro{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 30%,#314979,#060a10 72%)}.introbox{max-width:720px;padding:28px}.introbox h1{font-size:clamp(42px,10vw,86px);margin:0;letter-spacing:-3px}.accent{color:#a98bff}.introbox p{line-height:1.6;color:#c7d0e2}.start{cursor:pointer;background:#8d6cff;color:#fff;border:0;border-radius:12px;padding:16px 26px;font-size:18px;font-weight:900;box-shadow:0 8px 30px #0008}.start:disabled{opacity:.55;cursor:wait}
 #dialog{display:none;position:fixed;left:4%;right:4%;bottom:20px;z-index:15}.choice{margin:8px 6px 0 0;padding:9px 13px;border-radius:9px;border:1px solid #7568b8;background:#282246;color:#fff}
 #touch{position:fixed;left:14px;right:14px;bottom:14px;display:flex;justify-content:space-between;pointer-events:none}.dpad{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:48px 48px 48px;gap:3px;pointer-events:auto}.dpad button,.acts button{background:#111827e8;color:#fff;border:1px solid #687594;border-radius:12px;font-weight:900}.up{grid-column:2}.l{grid-column:1;grid-row:2}.d{grid-column:2;grid-row:2}.r{grid-column:3;grid-row:2}.acts{display:flex;gap:7px;align-items:end;pointer-events:auto}.acts button{width:60px;height:60px}.atk{border-color:#b178ff!important}
 </style>
@@ -19,19 +20,17 @@
 <div id="message" class="box"></div>
 <div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText"></div><div id="choices"></div></div>
 <div id="touch"><div class="dpad"><button class="up" data-key="w">▲</button><button class="l" data-key="a">◀</button><button class="d" data-key="s">▼</button><button class="r" data-key="d">▶</button></div><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
-<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · MONDE 3D</h2><p>Cette version utilise uniquement de vrais modèles humanoïdes 3D pour Aren et Lyra. Aucun personnage cubique ou modèle générique ne sera utilisé. Importe les deux fichiers GLB riggés issus de la référence officielle avant d’entrer dans le monde.</p><p id="loadStatus" class="small">Chargement du monde 3D…</p><div id="characterImport" class="box" style="margin:14px auto;max-width:520px;text-align:left"><b>PERSONNAGES 3D — PRODUCTION</b><div class="small" style="margin:7px 0">Aren — vrai humanoïde 3D GLB</div><input id="arenFile" type="file" accept=".glb,.gltf" style="width:100%;margin-bottom:10px"><div class="small" style="margin:7px 0">Lyra — vrai humanoïde 3D GLB</div><input id="lyraFile" type="file" accept=".glb,.gltf" style="width:100%"><div id="assetStatus" class="small" style="margin-top:9px">Deux modèles sont nécessaires.</div></div><p class="small">WASD / flèches · ESPACE : attaque · E : parler · P : potion</p><button id="start" class="start" disabled>CHARGEMENT…</button></div></div>
+<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · TEST BUILD</h2><p>Entre directement dans un monde fantasy 3D avec de vrais personnages humanoïdes riggés et animés. Cette version est destinée aux premiers testeurs.</p><p id="loadStatus" class="small">Chargement du monde et des personnages…</p><button id="start" class="start" disabled>CHARGEMENT…</button><p class="small">WASD / flèches · ESPACE : attaque · E : parler · P : potion</p></div></div>
 <script src="vendor/three.min.js"></script>
 <script src="vendor/GLTFLoader.js"></script>
 <script>
 (function(){
-  const status=document.getElementById('loadStatus'),start=document.getElementById('start');
-  if(window.THREE){
-    status.textContent='Moteur 3D local chargé. Chargement des personnages 3D…';
-    const s=document.createElement('script'); s.src='game.js?v=local3d';
-    s.onload=()=>{start.disabled=true;start.textContent='IMPORTER LES 2 PERSONNAGES'};
-    s.onerror=()=>{status.textContent='Le jeu n’a pas pu démarrer. Recharge la page.'};
-    document.body.appendChild(s);
-  }else status.textContent='Le moteur 3D local n’a pas pu être chargé.';
+ const status=document.getElementById('loadStatus'),start=document.getElementById('start');
+ if(!window.THREE){status.textContent='Moteur 3D indisponible.';return}
+ const s=document.createElement('script');s.src='game.js?v=testbuild2';
+ s.onload=()=>status.textContent='Personnages et monde chargés. Prêt à jouer.';
+ s.onerror=()=>status.textContent='Le jeu n’a pas pu démarrer. Recharge la page.';
+ document.body.appendChild(s);
 })();
 </script>
 </body>
