@@ -41,7 +41,7 @@ for(const p of [[-5,-11],[5,-11],[-18,-11],[18,-11],[-42,-27],[42,37]]){const f=
 const md=sph(5,M(0xeaf4ff,.45));md.position.set(-48,52,-75);scene.add(md);
 for(let i=0;i<(MOBILE?45:100);i++){const s=sph(.025,M(0xf0f6ff,.4));s.position.set(rand(-95,95),rand(25,85),rand(-105,-30));scene.add(s)}
 const S=Object.assign({level:1,xp:0,hp:120,maxHp:120,gold:40,rep:0,guild:0,bond:20,potions:3,kills:0,stage:0,skills:0,loot:0,day:0},JSON.parse(localStorage.getItem('otaku3d')||'{}'));
-const player={x:0,z:18,model:new T.Group(),ready:false,mixer:null,actions:{},attack:0,attackT:0,walking:false};const lyra={x:-3,z:4,model:new T.Group(),ready:false,mixer:null,actions:{}};player.model.visible=true;lyra.model.visible=true;
+const player={x:0,z:18,model:new T.Group(),ready:false,mixer:null,actions:{},attack:0,attackT:0,walking:false,vx:0,vz:0};const lyra={x:-3,z:4,model:new T.Group(),ready:false,mixer:null,actions:{}};player.model.visible=true;lyra.model.visible=true;
 scene.add(player.model,lyra.model);
 function fit(obj,h){obj.visible=true;obj.updateMatrixWorld(true);const b=new T.Box3().setFromObject(obj),sz=b.getSize(new T.Vector3());if(sz.y)obj.scale.multiplyScalar(h/sz.y);obj.updateMatrixWorld(true);const b2=new T.Box3().setFromObject(obj);obj.position.y-=b2.min.y;obj.updateMatrixWorld(true);obj.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;n.frustumCulled=false}})}
 function weapon(target,type){let hand=null;target.model.traverse(n=>{if(!hand&&/right.?hand|hand_r|mixamorigRightHand/i.test(n.name))hand=n});const g=new T.Group();if(type==='sword'){const blade=box(.13,1.65,.07,M(0xe6efff,.22,.8));blade.position.y=.82;g.add(blade);const guard=box(.58,.09,.13,M(0xd9b14d,.3,.7));guard.position.y=.1;g.add(guard)}else{const staff=cyl(.06,1.9,M(0x68452b),10);staff.position.y=.95;g.add(staff);const orb=sph(.18,G(0x64dcff));orb.position.y=1.98;g.add(orb)}if(hand)hand.add(g);else{g.position.set(0,1,0);target.model.add(g)}}
@@ -94,14 +94,26 @@ function startGame(){if(!player.ready||!lyra.ready)return;started=true;document.
 start.onclick=startGame;hud();
 const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' '){e.preventDefault();attack()}if(e.key.toLowerCase()==='e')interact();if(e.key.toLowerCase()==='p')potion();if(e.key.toLowerCase()==='k')skill()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.onpointerdown=e=>{e.preventDefault();keys[k]=true};b.onpointerup=b.onpointercancel=b.onpointerleave=()=>keys[k]=false});document.querySelectorAll('[data-act]').forEach(b=>b.onpointerdown=()=>({attack,potion,interact,skill}[b.dataset.act])());
+
+// Mobile virtual joystick: continuous 360° movement, no button mashing required.
+const joystick=document.getElementById('joystick'),stick=document.getElementById('stick');
+if(joystick&&stick){
+ let pid=null;
+ const move=e=>{if(pid===null)return;const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,max=r.width*.34;let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy),q=d>max?max/d:1;dx*=q;dy*=q;stick.style.transform=\`translate(calc(-50% + \${dx}px),calc(-50% + \${dy}px))\`;joystick.dataset.x=(dx/max).toFixed(3);joystick.dataset.z=(dy/max).toFixed(3);};
+ const end=()=>{pid=null;joystick.dataset.active='0';joystick.dataset.x='0';joystick.dataset.z='0';stick.style.transform='translate(-50%,-50%)'};
+ joystick.addEventListener('pointerdown',e=>{pid=e.pointerId;joystick.dataset.active='1';joystick.setPointerCapture(pid);move(e)});
+ joystick.addEventListener('pointermove',move);joystick.addEventListener('pointerup',end);joystick.addEventListener('pointercancel',end);
+}
+function tryLandscape(){try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{});}catch(e){}}
+document.addEventListener('click',tryLandscape,{once:true});
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6))});
 let started=false,last=performance.now(),phase=0;
 function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;phase+=dt;
-if(started&&!dialog){lyra.model.position.set(lyra.x,0,lyra.z);lyra.model.rotation.y=Math.sin(phase*.5)*.18;let x=(keys.d?1:0)-(keys.a?1:0),z=(keys.s?1:0)-(keys.w?1:0);if(x||z){const l=Math.hypot(x,z);player.x+=x/l*5.8*dt;player.z+=z/l*5.8*dt;player.model.rotation.y=Math.atan2(x,z);player.walking=true}else player.walking=false;
+if(started&&!dialog){lyra.model.position.set(lyra.x,0,lyra.z);lyra.model.rotation.y=Math.sin(phase*.5)*.18;let x=(keys.d?1:0)-(keys.a?1:0),z=(keys.s?1:0)-(keys.w?1:0);const joy=document.getElementById('joystick');if(joy&&joy.dataset.active==='1'){x=+(joy.dataset.x||0);z=+(joy.dataset.z||0)}const l=Math.hypot(x,z);if(l>0.04){x/=l;z/=l;const accel=22;player.vx+=(x*5.8-player.vx)*Math.min(1,accel*dt);player.vz+=(z*5.8-player.vz)*Math.min(1,accel*dt);player.x+=player.vx*dt;player.z+=player.vz*dt;player.model.rotation.y=Math.atan2(player.vx,player.vz);player.walking=true}else{player.vx*=Math.pow(.001,dt);player.vz*=Math.pow(.001,dt);if(Math.hypot(player.vx,player.vz)<.05){player.vx=0;player.vz=0}player.walking=Math.hypot(player.vx,player.vz)>.12;}
 player.x=Math.max(-82,Math.min(82,player.x));player.z=Math.max(-82,Math.min(82,player.z));player.model.position.set(player.x,0,player.z);
-for(const e of enemies){if(e.dead)continue;e.cd-=dt;const dx=player.x-e.x,dz=player.z-e.z,d=Math.hypot(dx,dz);if(d<22&&d>.4){e.x+=dx/d*e.speed*dt;e.z+=dz/d*e.speed*dt;e.model.position.set(e.x,0,e.z);e.model.rotation.y=Math.atan2(dx,dz)}if(d<1.7&&e.cd<=0){e.cd=1.1;S.hp=Math.max(0,S.hp-e.atk);toast('💥 '+e.kind+' t’attaque !');if(S.hp===0){S.hp=S.maxHp*.55;player.x=0;player.z=18;S.gold=Math.max(0,S.gold-20);toast('💀 Tu as été vaincu. Retour au village.')}save()}}
+for(const e of enemies){if(e.dead)continue;e.cd-=dt;const dx=player.x-e.x,dz=player.z-e.z,d=Math.hypot(dx,dz);if(d<22&&d>.4){e.x+=dx/d*e.speed*dt;e.z+=dz/d*e.speed*dt;e.model.position.set(e.x,0,e.z);e.model.rotation.y=Math.atan2(dx,dz)}if(d<1.7&&e.cd<=0){e.cd=1.1;S.hp=Math.max(0,S.hp-e.atk);toast('💥 '+e.kind+' t’attaque !');if(S.hp===0){S.hp=S.maxHp*.55;player.x=S.saveX??0;player.z=S.saveZ??18;player.vx=0;player.vz=0;S.gold=Math.max(0,S.gold-20);toast('💀 Tu as été vaincu. Retour au village.')}save()}}
 attackCd=Math.max(0,attackCd-dt);if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)document.getElementById('message').style.display='none'}hud()}
 const night=(Math.sin(phase*.025)+1)/2;sun.intensity=1.15+night*1.4;scene.fog.density=.0058+night*.003;scene.background.setHSL(.60,.45,.07+.06*night);animate(dt);
-const camDist=MOBILE?7.5:10.5;const target=new T.Vector3(player.x+camDist*.72,MOBILE?5.1:6.6,player.z+camDist);camera.position.lerp(target,.09);camera.lookAt(new T.Vector3(player.x,1.7,player.z));renderer.render(scene,camera);requestAnimationFrame(loop)}
+const camDist=MOBILE?7.8:10.5;const camTarget=new T.Vector3(player.x+camDist*.72,MOBILE?5.2:6.6,player.z+camDist);camera.position.lerp(camTarget,1-Math.pow(.001,dt));camera.lookAt(new T.Vector3(player.x,1.55,player.z));renderer.render(scene,camera);requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 })();
