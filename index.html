@@ -29,14 +29,14 @@
 <div id="message" class="box"></div><div id="joystick" aria-label="Joystick de déplacement"><div id="stick"></div></div><div id="rotate" aria-hidden="true"></div>
 <div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText"></div><div id="choices"></div></div>
 <div id="touch"><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button data-act="skill">TECHNIQUE</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
-<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · TEST BUILD</h2><p>Explore un monde fantasy 3D vivant : village, cité fortifiée, forêt, rivière, ruines, montagnes, donjon et plusieurs familles de créatures. Aren et Lyra sont de vrais personnages humanoïdes riggés et animés. Cette version est conçue pour les premiers testeurs.</p><p id="loadStatus" class="small">Chargement du monde et des personnages…</p><button id="start" class="start" disabled>CHARGEMENT…</button><p class="small">WASD / flèches · ESPACE : attaque · E : interaction · P : potion · K : compétence</p></div></div>
+<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · TEST BUILD</h2><p>Explore un monde fantasy 3D vivant : village, cité fortifiée, forêt, rivière, ruines, montagnes, donjon et plusieurs familles de créatures. Aren et Lyra sont de vrais personnages humanoïdes riggés et animés. Cette version est conçue pour les premiers testeurs.</p><p id="loadStatus" class="small">✓ Monde prêt · les personnages 3D se chargent en arrière-plan.</p><button id="start" class="start">ENTRER DANS LE MONDE</button><p class="small">WASD / flèches · ESPACE : attaque · E : interaction · P : potion · K : compétence</p></div></div>
 <script src="vendor/three.min.js"></script>
 <script src="vendor/GLTFLoader.js"></script>
 <script>
 (function(){
  const status=document.getElementById('loadStatus'),start=document.getElementById('start');
  if(!window.THREE){status.textContent='Moteur 3D indisponible.';return}
- const s=document.createElement('script');s.src='game.js?v=renaissance-overhaul-1';
+ const s=document.createElement('script');s.src='game.js?v=renaissance-overhaul-2';
  s.onload=()=>status.textContent='Personnages et monde chargés. Prêt à jouer.';
  s.onerror=()=>status.textContent='Le jeu n’a pas pu démarrer. Recharge la page.';
  document.body.appendChild(s);\n if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
