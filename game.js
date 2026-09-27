@@ -103,7 +103,7 @@ document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.onpo
 const joystick=document.getElementById('joystick'),stick=document.getElementById('stick');
 if(joystick&&stick){
  let pid=null;
- const move=e=>{if(pid===null)return;const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,max=r.width*.34;let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy),q=d>max?max/d:1;dx*=q;dy*=q;stick.style.transform=\`translate(calc(-50% + \${dx}px),calc(-50% + \${dy}px))\`;joystick.dataset.x=(dx/max).toFixed(3);joystick.dataset.z=(dy/max).toFixed(3);};
+ const move=e=>{if(pid===null)return;const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,max=r.width*.34;let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy),q=d>max?max/d:1;dx*=q;dy*=q;stick.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;joystick.dataset.x=(dx/max).toFixed(3);joystick.dataset.z=(dy/max).toFixed(3);};
  const end=()=>{pid=null;joystick.dataset.active='0';joystick.dataset.x='0';joystick.dataset.z='0';stick.style.transform='translate(-50%,-50%)'};
  joystick.addEventListener('pointerdown',e=>{pid=e.pointerId;joystick.dataset.active='1';joystick.setPointerCapture(pid);move(e)});
  joystick.addEventListener('pointermove',move);joystick.addEventListener('pointerup',end);joystick.addEventListener('pointercancel',end);
