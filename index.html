@@ -19,13 +19,14 @@
 <div id="message" class="box"></div>
 <div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText"></div><div id="choices"></div></div>
 <div id="touch"><div class="dpad"><button class="up" data-key="w">▲</button><button class="l" data-key="a">◀</button><button class="d" data-key="s">▼</button><button class="r" data-key="d">▶</button></div><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
-<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · MONDE 3D</h2><p>Cette version utilise maintenant de vrais modèles 3D texturés pour les personnages et le décor. Tu es Aren. Retrouve Lyra, découvre le village et commence ton aventure.</p><p id="loadStatus" class="small">Chargement du monde 3D…</p><p class="small">WASD / flèches · ESPACE : attaque · E : parler · P : potion</p><button id="start" class="start" disabled>CHARGEMENT…</button></div></div>
+<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · MONDE 3D</h2><p>Cette version charge de vrais modèles 3D de personnages quand les assets sont disponibles, avec un fallback de sécurité si le réseau bloque un modèle. Tu es Aren. Retrouve Lyra, découvre le village et commence ton aventure.</p><p id="loadStatus" class="small">Chargement du monde 3D…</p><p class="small">WASD / flèches · ESPACE : attaque · E : parler · P : potion</p><button id="start" class="start" disabled>CHARGEMENT…</button></div></div>
 <script src="vendor/three.min.js"></script>
+<script src="vendor/GLTFLoader.js"></script>
 <script>
 (function(){
   const status=document.getElementById('loadStatus'),start=document.getElementById('start');
   if(window.THREE){
-    status.textContent='Moteur 3D local chargé. Préparation du monde…';
+    status.textContent='Moteur 3D local chargé. Chargement des personnages 3D…';
     const s=document.createElement('script'); s.src='game.js?v=local3d';
     s.onload=()=>{start.disabled=false;start.textContent='ENTRER DANS LE MONDE'};
     s.onerror=()=>{status.textContent='Le jeu n’a pas pu démarrer. Recharge la page.'};
