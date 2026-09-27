@@ -185,69 +185,6 @@ function bindCharacterInputs(){
 }
 bindCharacterInputs();loadStoredCharacters();
 
-const S=Object.assign({level:1,xp:0,hp:100,maxHp:100,gold:25,rep:0,guild:0,bond:15,potions:2,stage:0,kills:0},JSON.parse(localStorage.getItem('otaku3d')||'{}'));
-const player={x:0,z:18,model:makeAren(),walking:false,attack:0};const lyra={x:-3,z:4,model:makeLyra()};player.model.position.set(0,0,18);lyra.model.position.set(-3,0,4);
-scene.add(player.model,lyra.model);
-
-const REAL_CHARACTER_ASSETS = {
-  aren: 'https://arweave.net/wmTy-SEXxmlp847i1U1m2GziSGp-4T8qrZ77A32LlY8',
-  lyra: 'https://raw.githubusercontent.com/GY19A/jev-stage/main/static/vrm/anime_girl.vrm'
-};
-const realMixers = [];
-function fitRealCharacter(obj, targetHeight=3.05){
-  const box3=new T.Box3().setFromObject(obj);
-  const size=box3.getSize(new T.Vector3());
-  if(size.y>0) obj.scale.multiplyScalar(targetHeight/size.y);
-  const b2=new T.Box3().setFromObject(obj);
-  obj.position.y -= b2.min.y;
-  obj.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;n.frustumCulled=false;}});
-}
-function addHeroWeapon(rootObj, kind){
-  const g=new T.Group();
-  if(kind==='sword'){
-    const blade=box(.11,2.1,.07,M(0xdceeff,.18,.75)); blade.position.y=1.05; g.add(blade);
-    const guard=box(.65,.10,.12,M(0xd6ad50,.35,.45)); guard.position.y=.15; g.add(guard);
-    const grip=box(.11,.5,.11,M(0x2b2430)); grip.position.y=-.12; g.add(grip);
-    g.position.set(.55,1.0,.12); g.rotation.z=-.18;
-  }else{
-    const pole=cyl(.055,2.7,M(0x5a3926),10); pole.position.y=1.35; g.add(pole);
-    const orb=sph(.26,glow(0x58d9ff)); orb.position.y=2.72; g.add(orb);
-    const aura=sph(.5,glow(0x4c82ff)); aura.position.y=2.72; aura.scale.z=.22; g.add(aura);
-    g.position.set(.62,0,.08); g.rotation.z=-.08;
-  }
-  rootObj.add(g);
-}
-function loadRealCharacter(target, url, kind){
-  if(!T.GLTFLoader) return;
-  const loader=new T.GLTFLoader();
-  loader.setCrossOrigin && loader.setCrossOrigin('anonymous');
-  loader.load(url,(gltf)=>{
-    const model=gltf.scene;
-    fitRealCharacter(model);
-    model.rotation.y=Math.PI;
-    if(gltf.animations && gltf.animations.length){
-      const mixer=new T.AnimationMixer(model);
-      realMixers.push({mixer,clips:gltf.animations});
-      const idle=gltf.animations.find(a=>/idle|stand|breath/i.test(a.name))||gltf.animations[0];
-      mixer.clipAction(idle).play();
-    }
-    addHeroWeapon(model,kind);
-    const old=target.model;
-    const pos=old.position.clone();
-    target.model=model;
-    target.model.position.copy(pos);
-    scene.remove(old);
-    scene.add(model);
-    target.real3d=true;
-    toast(kind==='sword'?'⚔️ Aren est maintenant un vrai personnage 3D.':'🔮 Lyra est maintenant un vrai personnage 3D.');
-    hud();
-  },undefined,(err)=>{
-    console.warn('Real character load failed:',kind,err);
-  });
-}
-loadRealCharacter(player,REAL_CHARACTER_ASSETS.aren,'sword');
-loadRealCharacter(lyra,REAL_CHARACTER_ASSETS.lyra,'staff');
-
 function monster(){
  const g=new T.Group(), body=sph(.65,M(0x566b76)), head=sph(.48,M(0x728994));head.position.y=.55;g.add(body,head);
  for(const sx of [-.16,.16]){const e=sph(.07,glow(0xff455c));e.position.set(sx,.68,.42);g.add(e)}
