@@ -12,7 +12,7 @@
 #joystick{position:fixed;left:18px;bottom:20px;width:112px;height:112px;border-radius:50%;background:rgba(12,19,31,.48);border:2px solid rgba(190,205,230,.55);box-shadow:0 5px 22px #0007;touch-action:none;z-index:10}
 #stick{position:absolute;left:50%;top:50%;width:48px;height:48px;border-radius:50%;transform:translate(-50%,-50%);background:rgba(141,108,255,.82);border:2px solid #fff;box-shadow:0 3px 14px #0008;pointer-events:none}
 #rotate{display:none;position:fixed;inset:0;z-index:100;background:#050912;color:#fff;align-items:center;justify-content:center;text-align:center;padding:30px}.rotateBox{max-width:360px}.rotateIcon{font-size:54px;margin-bottom:12px}
-@media (orientation:portrait){#rotate{display:flex}}
+@media (orientation:portrait){#rotate{display:none}}
 @media (max-width:700px) and (orientation:landscape){#hud{padding:6px}.box{padding:5px 7px;border-radius:10px}.left{width:29vw}.right{width:31vw}.small{font-size:9px}#joystick{width:92px;height:92px;left:12px;bottom:12px}#stick{width:40px;height:40px}.acts{gap:5px!important}.acts button{width:55px!important;height:55px!important;font-size:10px!important}}
 
 #intro{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 30%,#314979,#060a10 72%)}.introbox{max-width:720px;padding:28px}.introbox h1{font-size:clamp(42px,10vw,86px);margin:0;letter-spacing:-3px}.accent{color:#a98bff}.introbox p{line-height:1.6;color:#c7d0e2}.start{cursor:pointer;background:#8d6cff;color:#fff;border:0;border-radius:12px;padding:16px 26px;font-size:18px;font-weight:900;box-shadow:0 8px 30px #0008}.start:disabled{opacity:.55;cursor:wait}
@@ -23,7 +23,7 @@
 <body>
 <div id="game"></div>
 <div id="hud"><div class="top"><div id="stats" class="box left"></div><div id="quest" class="box right"></div></div></div>
-<div id="message" class="box"></div><div id="joystick" aria-label="Joystick de déplacement"><div id="stick"></div></div><div id="rotate"><div class="rotateBox"><div class="rotateIcon">↻</div><h2>Tourne ton téléphone</h2><p>OTAKUJEUX est optimisé en <b>mode paysage</b> pour garder le monde visible et placer les commandes sans gêner l'action.</p></div></div>
+<div id="message" class="box"></div><div id="joystick" aria-label="Joystick de déplacement"><div id="stick"></div></div><div id="rotate" aria-hidden="true"></div>
 <div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText"></div><div id="choices"></div></div>
 <div id="touch"><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button data-act="skill">TECHNIQUE</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
 <div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · TEST BUILD</h2><p>Explore un monde fantasy 3D vivant : village, cité fortifiée, forêt, rivière, ruines, montagnes, donjon et plusieurs familles de créatures. Aren et Lyra sont de vrais personnages humanoïdes riggés et animés. Cette version est conçue pour les premiers testeurs.</p><p id="loadStatus" class="small">Chargement du monde et des personnages…</p><button id="start" class="start" disabled>CHARGEMENT…</button><p class="small">WASD / flèches · ESPACE : attaque · E : interaction · P : potion · K : compétence</p></div></div>
