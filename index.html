@@ -20,55 +20,17 @@
 <div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText"></div><div id="choices"></div></div>
 <div id="touch"><div class="dpad"><button class="up" data-key="w">▲</button><button class="l" data-key="a">◀</button><button class="d" data-key="s">▼</button><button class="r" data-key="d">▶</button></div><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
 <div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · MONDE 3D</h2><p>Cette version utilise maintenant de vrais modèles 3D texturés pour les personnages et le décor. Tu es Aren. Retrouve Lyra, découvre le village et commence ton aventure.</p><p id="loadStatus" class="small">Chargement du monde 3D…</p><p class="small">WASD / flèches · ESPACE : attaque · E : parler · P : potion</p><button id="start" class="start" disabled>CHARGEMENT…</button></div></div>
+<script src="vendor/three.min.js"></script>
 <script>
 (function(){
-  const status=document.getElementById('loadStatus');
-  const start=document.getElementById('start');
-  const sources=[
-    [
-      'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
-      'https://unpkg.com/three@0.160.0/build/three.min.js','https://raw.githubusercontent.com/mrdoob/three.js/r160/build/three.min.js'
-    ],
-    [
-      'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js',
-      'https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js','https://raw.githubusercontent.com/mrdoob/three.js/r160/examples/js/loaders/GLTFLoader.js'
-    ],
-    [
-      'https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@2.0.1/lib/three-vrm.min.js',
-      'https://unpkg.com/@pixiv/three-vrm@2.0.1/lib/three-vrm.min.js','https://raw.githubusercontent.com/pixiv/three-vrm/2.0.1/lib/three-vrm.min.js'
-    ]
-  ];
-  function loadOne(urls,i){
-    return new Promise((resolve,reject)=>{
-      let n=0;
-      function attempt(){
-        if(n>=urls.length)return reject(new Error('dependency '+i));
-        const s=document.createElement('script');
-        s.src=urls[n++];
-        s.onload=()=>resolve();
-        s.onerror=()=>{s.remove();attempt()};
-        document.head.appendChild(s);
-      }
-      attempt();
-    });
-  }
-  (async()=>{
-    try{
-      status.textContent='Chargement du moteur 3D…';
-      for(let i=0;i<sources.length;i++){
-        status.textContent='Chargement 3D '+(i+1)+'/3…';
-        await loadOne(sources[i],i);
-      }
-      status.textContent='Préparation du monde…';
-      const s=document.createElement('script');
-      s.src='game.js?v=2';
-      s.onload=()=>{ if(start){start.disabled=false;start.textContent='ENTRER DANS LE MONDE'} };
-      s.onerror=()=>{status.textContent='Le jeu n’a pas pu démarrer. Recharge la page.'};
-      document.body.appendChild(s);
-    }catch(e){
-      status.textContent='Connexion au moteur 3D impossible. Une seconde tentative est disponible en rechargeant la page.';
-    }
-  })();
+  const status=document.getElementById('loadStatus'),start=document.getElementById('start');
+  if(window.THREE){
+    status.textContent='Moteur 3D local chargé. Préparation du monde…';
+    const s=document.createElement('script'); s.src='game.js?v=local3d';
+    s.onload=()=>{start.disabled=false;start.textContent='ENTRER DANS LE MONDE'};
+    s.onerror=()=>{status.textContent='Le jeu n’a pas pu démarrer. Recharge la page.'};
+    document.body.appendChild(s);
+  }else status.textContent='Le moteur 3D local n’a pas pu être chargé.';
 })();
 </script>
 </body>
