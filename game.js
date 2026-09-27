@@ -135,12 +135,11 @@ async function putAsset(name,buffer){
 }
 function characterActions(gltf,model,target){
  if(!gltf.animations||!gltf.animations.length)return;
- const mixer=new T.AnimationMixer(model),actions={};
- gltf.animations.forEach(c=>actions[c.name]=mixer.clipAction(c));
- const find=(rx)=>Object.entries(actions).find(([n])=>rx.test(n))?.[1];
+ const mixer=new T.AnimationMixer(model);
+ const clip=(rx)=>gltf.animations.find(c=>rx.test(c.name))||null;
+ const idle=clip(/idle|stand|breath/i),walk=clip(/walk|run|locomotion/i),attack=clip(/attack|slash|combat/i);
  target.mixer=mixer;
- target.actions={idle:find(/idle|stand|breath/i)||gltf.animations[0]?mixer.clipAction(find(/idle|stand|breath/i)||gltf.animations[0]):null,
-  walk:find(/walk|run|locomotion/i),attack:find(/attack|slash|combat/i)};
+ target.actions={idle:idle?mixer.clipAction(idle):null,walk:walk?mixer.clipAction(walk):null,attack:attack?mixer.clipAction(attack):null};
  if(target.actions.idle)target.actions.idle.play();
  realMixers.push(mixer);
 }
@@ -226,7 +225,7 @@ function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;if(started&&!dialog
 for(const e of enemies){e.cd-=dt;const dx=player.x-e.x,dz=player.z-e.z,d=Math.hypot(dx,dz);if(d<20&&d>.3){e.x+=dx/d*1.8*dt;e.z+=dz/d*1.8*dt;e.model.position.x=e.x;e.model.position.z=e.z;e.model.rotation.y=Math.atan2(dx,dz)}if(d<1.5&&e.cd<=0){e.cd=1;S.hp=Math.max(0,S.hp-(5+S.level*2));if(S.hp===0){S.hp=S.maxHp/2;player.x=0;player.z=18;S.gold=Math.max(0,S.gold-15);toast('Tu as été vaincu.')}save()}}attackCd=Math.max(0,attackCd-dt);hud();if(msg>0){msg-=dt;if(msg<=0)document.getElementById('message').style.display='none'}}
 animate(t/1000);
 camera.position.lerp(new T.Vector3(player.x+10,7.5,player.z+11),.075);camera.lookAt(new T.Vector3(player.x,1.8,player.z));
-realMixers.forEach(x=>x.mixer.update(Math.min(.05,dt)));
+realMixers.forEach(m=>m.update(Math.min(.05,dt)));
   renderer.render(scene,camera);requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 })();
