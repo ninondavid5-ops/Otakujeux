@@ -1,82 +1,69 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>OTAKUJEUX — Renaissance 3D</title>
+<title>OTAKUJEUX — Renaissance</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050711;color:#fff;font-family:system-ui,Arial}
-#game{position:fixed;inset:0}canvas{display:block}
-#hud{position:fixed;inset:0;pointer-events:none;padding:14px}.box{background:#080c18d9;border:1px solid #5a6688;border-radius:14px;padding:10px 13px;backdrop-filter:blur(5px);box-shadow:0 8px 30px #0007}.top{display:flex;justify-content:space-between;gap:12px}.left{width:260px}.right{width:300px;text-align:right}.title{font-weight:900;letter-spacing:1px}.accent{color:#a58aff}.bar{height:8px;background:#282d3b;border-radius:10px;margin-top:5px;overflow:hidden}.hp{height:100%;background:#e75e72}.xp{height:100%;background:#8d70ff}
-#message{position:fixed;left:50%;bottom:95px;transform:translateX(-50%);display:none;max-width:90%;text-align:center}.small{font-size:12px;color:#b6c0da}
-#touch{position:fixed;left:16px;right:16px;bottom:16px;display:flex;justify-content:space-between;pointer-events:none}.dpad{display:grid;grid-template-columns:50px 50px 50px;grid-template-rows:50px 50px 50px;gap:4px;pointer-events:auto}.dpad button,.acts button{background:#11182ddd;color:#fff;border:1px solid #65718e;border-radius:13px;font-weight:800}.up{grid-column:2}.l{grid-column:1;grid-row:2}.d{grid-column:2;grid-row:2}.r{grid-column:3;grid-row:2}.acts{display:flex;gap:8px;align-items:end;pointer-events:auto}.acts button{width:62px;height:62px}.atk{border-color:#b36bff!important}
-#intro{position:fixed;inset:0;background:linear-gradient(#070a14eF,#05060bf7);display:flex;align-items:center;justify-content:center;text-align:center;z-index:10}.introbox{max-width:650px;padding:30px}.introbox h1{font-size:clamp(40px,9vw,82px);margin:0}.introbox p{color:#b9c2d9;line-height:1.7}.start{background:#8f70ff;color:#fff;border:0;padding:15px 24px;border-radius:12px;font-weight:900;font-size:17px}
-#dialog{display:none;position:fixed;left:5%;right:5%;bottom:22px;padding:16px;z-index:8}.choice{margin:8px 7px 0 0;padding:9px 13px;border-radius:9px;border:1px solid #7468b8;background:#29234b;color:white}
-@media(max-width:700px){.left{width:205px}.right{width:220px}.box{padding:8px;font-size:12px}.dpad{grid-template-columns:46px 46px 46px;grid-template-rows:46px 46px 46px}.acts button{width:56px;height:56px}}
-</style></head>
-<body>
-<div id="game"></div>
-<div id="hud"><div class="top"><div id="stats" class="box left"></div><div id="quest" class="box right"></div></div></div>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b12;color:#fff;font-family:system-ui,Arial}
+#game{position:fixed;inset:0}canvas{width:100%;height:100%;display:block;touch-action:none}
+#hud{position:fixed;inset:0;pointer-events:none;padding:12px}.top{display:flex;justify-content:space-between;gap:10px}.box{background:#090e19dd;border:1px solid #66728e;border-radius:14px;padding:9px 12px;backdrop-filter:blur(5px)}.left{width:265px}.right{width:300px;text-align:right}.title{font-weight:900}.bar{height:8px;background:#252b38;border-radius:8px;margin-top:4px;overflow:hidden}.hp{height:100%;background:#e85d70}.xp{height:100%;background:#8b6cff}.small{font-size:12px;color:#bac4d9}
+#message{position:fixed;left:50%;bottom:105px;transform:translateX(-50%);display:none;max-width:90%;text-align:center}
+#intro{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 35%,#27345e,#070912 70%)}.introbox{max-width:700px;padding:28px}.introbox h1{font-size:clamp(42px,10vw,86px);margin:0;letter-spacing:-3px}.accent{color:#a88cff}.introbox p{line-height:1.6;color:#c4cbe0}.start{cursor:pointer;background:#8d6cff;color:#fff;border:0;border-radius:12px;padding:16px 26px;font-size:18px;font-weight:900;box-shadow:0 8px 30px #0008}
+#dialog{display:none;position:fixed;left:4%;right:4%;bottom:20px;z-index:15}.choice{margin:8px 6px 0 0;padding:9px 13px;border-radius:9px;border:1px solid #7568b8;background:#282246;color:#fff}
+#touch{position:fixed;left:14px;right:14px;bottom:14px;display:flex;justify-content:space-between;pointer-events:none}.dpad{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:48px 48px 48px;gap:3px;pointer-events:auto}.dpad button,.acts button{background:#111827e8;color:#fff;border:1px solid #687594;border-radius:12px;font-weight:900}.up{grid-column:2}.l{grid-column:1;grid-row:2}.d{grid-column:2;grid-row:2}.r{grid-column:3;grid-row:2}.acts{display:flex;gap:7px;align-items:end;pointer-events:auto}.acts button{width:60px;height:60px}.atk{border-color:#b178ff!important}
+</style></head><body>
+<div id="game"></div><div id="hud"><div class="top"><div id="stats" class="box left"></div><div id="quest" class="box right"></div></div></div>
 <div id="message" class="box"></div>
-<div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText" style="margin-top:6px"></div><div id="choices"></div></div>
+<div id="dialog" class="box"><b id="speaker" class="accent"></b><div id="dialogText"></div><div id="choices"></div></div>
 <div id="touch"><div class="dpad"><button class="up" data-key="w">▲</button><button class="l" data-key="a">◀</button><button class="d" data-key="s">▼</button><button class="r" data-key="d">▶</button></div><div class="acts"><button data-act="interact">PARLER</button><button data-act="potion">POTION</button><button class="atk" data-act="attack">ATTAQUE</button></div></div>
-<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · 3D</h2><p>Tu es Aren. Réincarné dans un monde fantastique, tu pars d'une ferme où tu as grandi dans la servitude. Retrouve Lyra, entre dans la guilde et forge ton propre nom.</p><p class="small">Déplacement : WASD / flèches · Caméra : souris · E : interaction · ESPACE : attaque · P : potion</p><button class="start" id="start">ENTRER DANS LE MONDE</button></div></div>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+<div id="intro"><div class="introbox"><h1>OTAKU<span class="accent">JEUX</span></h1><h2>RENAISSANCE · 3D</h2><p>Tu es Aren, réincarné dans un monde fantastique. Tu pars de zéro. Retrouve Lyra, découvre le village, combats les monstres et commence à bâtir ta légende.</p><p class="small">Déplacement : WASD / flèches · Attaque : ESPACE · Interaction : E · Potion : P</p><button id="start" class="start">ENTRER DANS LE MONDE</button></div></div>
 <script>
-if (typeof THREE === 'undefined') {
-  document.getElementById('start').onclick = () => {
-    document.querySelector('.introbox p').textContent = 'Le moteur 3D n’a pas pu être chargé. Vérifie ta connexion Internet puis recharge la page.';
-    document.getElementById('start').textContent = 'RECHARGER';
-    document.getElementById('start').onclick = () => location.reload();
-  };
-  throw new Error('Three.js non chargé');
-}
-
-
-const root=document.getElementById('game');
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x86b7d9);scene.fog=new THREE.Fog(0x86b7d9,35,115);
-const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,300);camera.position.set(7,7,10);
-const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;root.appendChild(renderer.domElement);
-const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=5;controls.maxDistance=13;controls.maxPolarAngle=Math.PI*.47;controls.minPolarAngle=.35;controls.target.set(0,1,0);
-scene.add(new THREE.HemisphereLight(0xbad8ff,0x31422b,2.1));const sun=new THREE.DirectionalLight(0xfff0ce,3);sun.position.set(-25,35,15);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
-
+(function(){
+'use strict';
+const root=document.getElementById('game'), canvas=document.createElement('canvas');root.appendChild(canvas);
+const gl=canvas.getContext('webgl',{antialias:true,alpha:false});
+const start=document.getElementById('start');
+if(!gl){start.textContent='NAVIGATEUR NON COMPATIBLE';start.disabled=true;return;}
+const vs='attribute vec3 p;attribute vec3 c;uniform mat4 mvp;varying vec3 v;void main(){gl_Position=mvp*vec4(p,1.0);v=c;}';
+const fs='precision mediump float;varying vec3 v;void main(){gl_FragColor=vec4(v,1.0);}';
+function shader(t,s){const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);return x}
+const prog=gl.createProgram();gl.attachShader(prog,shader(gl.VERTEX_SHADER,vs));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(prog);gl.useProgram(prog);
+const locP=gl.getAttribLocation(prog,'p'),locC=gl.getAttribLocation(prog,'c'),locM=gl.getUniformLocation(prog,'mvp');
 const S=Object.assign({level:1,xp:0,hp:100,maxHp:100,gold:25,rep:0,guild:0,bond:15,potions:2,stage:0,kills:0},JSON.parse(localStorage.getItem('otaku3d')||'{}'));
-const keys={};let started=false,dialog=false,last=performance.now(),msgTime=0;
-const player={group:null,speed:7,attackCd:0,hit:0};
-const lyra={group:null,pos:new THREE.Vector3(-2,0,2)};
-const monsters=[];
-const mats={grass:new THREE.MeshStandardMaterial({color:0x315c36}),path:new THREE.MeshStandardMaterial({color:0xb8986b}),wood:new THREE.MeshStandardMaterial({color:0x714d38}),roof:new THREE.MeshStandardMaterial({color:0x9c5d49}),skin:new THREE.MeshStandardMaterial({color:0xe6b596}),hero:new THREE.MeshStandardMaterial({color:0x5f82e8}),hair:new THREE.MeshStandardMaterial({color:0x262039}),girl:new THREE.MeshStandardMaterial({color:0x9a6cff}),monster:new THREE.MeshStandardMaterial({color:0x733c4b}),stone:new THREE.MeshStandardMaterial({color:0x666c78})};
-function box(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;scene.add(m);return m}
-function cyl(r,h,mat,x,y,z){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,10),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;scene.add(m);return m}
-function tree(x,z){cyl(.45,3,mats.wood,x,1.5,z);const a=cyl(1.7,2.4,mats.grass,x,3.8,z);a.scale.y=1.2}
-function house(x,z,w=8,d=7){box(w,4,d,mats.wood,x,2,z);const roof= new THREE.Mesh(new THREE.ConeGeometry(Math.max(w,d)*.75,3,4),mats.roof);roof.position.set(x,5.5,z);roof.rotation.y=Math.PI/4;roof.castShadow=true;scene.add(roof);box(1.4,2,.12,mats.wood,x,1,z-d/2-.07)}
-function buildWorld(){box(140,.4,140,mats.grass,0,-.2,0);box(140,.08,8,mats.path,0,.02,0);box(8,.09,140,mats.path,0,.03,0);house(-17,-14);house(18,-13,9,7);house(19,13,7,6);house(-20,15,7,6);for(let i=0;i<32;i++){let x=(Math.random()*110-55),z=(Math.random()*110-55);if(Math.abs(x)<27&&Math.abs(z)<24)continue;tree(x,z)}box(9,5,7,mats.stone,27,-2,0);box(7,4,7,mats.wood,27,2,0);const roof=new THREE.Mesh(new THREE.ConeGeometry(7,3,4),mats.roof);roof.position.set(27,5.5,0);roof.rotation.y=Math.PI/4;scene.add(roof)}
-function actor(mat,hairMat){const g=new THREE.Group();const body=new THREE.Mesh(new THREE.CapsuleGeometry(.55,1.35,5,10),mat);body.position.y=1.05;body.castShadow=true;g.add(body);const head=new THREE.Mesh(new THREE.SphereGeometry(.48,16,12),mats.skin);head.position.y=2.05;head.castShadow=true;g.add(head);const hair=new THREE.Mesh(new THREE.SphereGeometry(.5,16,10,0,Math.PI*2,0,Math.PI*.55),hairMat);hair.position.y=2.18;g.add(hair);scene.add(g);return g}
-function initActors(){player.group=actor(mats.hero,mats.hair);player.group.position.set(0,0,18);lyra.group=actor(mats.girl,mats.hair);lyra.group.position.copy(lyra.pos)}
-function spawnMonster(){const angle=Math.random()*Math.PI*2,rad=18+Math.random()*28;const g=actor(mats.monster,mats.hair);g.scale.set(1.1,1.1,1.1);g.position.set(Math.cos(angle)*rad,0,Math.sin(angle)*rad);const m={group:g,hp:45+S.level*8,max:45+S.level*8,cd:0,speed:2.0};monsters.push(m)}
-function xpNeed(){return 70+(S.level-1)*50}function rank(){return S.guild>=80?'S':S.guild>=60?'A':S.guild>=40?'B':S.guild>=25?'C':S.guild>=12?'D':S.guild>=5?'E':'F'}
+const keys={};let started=false,dialog=false,last=0,msg=0,attackCd=0;
+const player={x:0,z:18,rot:0};const lyra={x:-3,z:8};const enemies=[];
 function save(){localStorage.setItem('otaku3d',JSON.stringify(S));hud()}
-function xp(n){S.xp+=n;while(S.xp>=xpNeed()){S.xp-=xpNeed();S.level++;S.maxHp+=15;S.hp=S.maxHp;toast('✨ Niveau '+S.level+' !')}}
-function hud(){document.getElementById('stats').innerHTML='<div class="title">AREN · RANG '+rank()+'</div>PV '+S.hp+'/'+S.maxHp+' · Niv. '+S.level+' · 💰 '+S.gold+'<div class="bar"><div class="hp" style="width:'+100*S.hp/S.maxHp+'%"></div></div><div class="bar"><div class="xp" style="width:'+100*S.xp/xpNeed()+'%"></div></div><span class="small">XP '+S.xp+'/'+xpNeed()+' · Réputation '+S.rep+' · Lyra '+S.bond+'</span>';let q=S.stage===0?'Retrouver Lyra dans le village':S.stage===1?'Parler à Lyra puis entrer dans la guilde':S.stage===2?'Vaincre 3 monstres ('+S.kills+'/3)':S.stage===3?'Retourner voir Lyra':'Explorer le monde';document.getElementById('quest').innerHTML='<b>QUÊTE</b><br>'+q+'<br><span class="small">Guilde '+rank()+' · Potions '+S.potions+'</span>'}
-function toast(t){const e=document.getElementById('message');e.textContent=t;e.style.display='block';msgTime=3}
-function openDialog(who,text,options){dialog=true;document.getElementById('speaker').textContent=who;document.getElementById('dialogText').textContent=text;const ch=document.getElementById('choices');ch.innerHTML='';options.forEach(o=>{const b=document.createElement('button');b.className='choice';b.textContent=o[0];b.onclick=o[1];ch.appendChild(b)});document.getElementById('dialog').style.display='block'}
+function rank(){return S.guild>=80?'S':S.guild>=60?'A':S.guild>=40?'B':S.guild>=25?'C':S.guild>=12?'D':S.guild>=5?'E':'F'}
+function need(){return 70+(S.level-1)*50}
+function gainxp(n){S.xp+=n;while(S.xp>=need()){S.xp-=need();S.level++;S.maxHp+=15;S.hp=S.maxHp;toast('✨ Niveau '+S.level+' !')}}
+function hud(){document.getElementById('stats').innerHTML='<div class="title">AREN · RANG '+rank()+'</div>PV '+S.hp+'/'+S.maxHp+' · Niv. '+S.level+' · 💰 '+S.gold+'<div class="bar"><div class="hp" style="width:'+100*S.hp/S.maxHp+'%"></div></div><div class="bar"><div class="xp" style="width:'+100*S.xp/need()+'%"></div></div><span class="small">XP '+S.xp+'/'+need()+' · Réputation '+S.rep+' · Lyra '+S.bond+'</span>';const q=S.stage===0?'Retrouver Lyra':S.stage===1?'Parler à Lyra et accepter la mission':S.stage===2?'Vaincre 3 monstres ('+S.kills+'/3)':S.stage===3?'Retourner voir Lyra':'Explorer le monde';document.getElementById('quest').innerHTML='<b>QUÊTE</b><br>'+q+'<br><span class="small">Guilde '+rank()+' · Potions '+S.potions+'</span>'}
+function toast(t){const e=document.getElementById('message');e.textContent=t;e.style.display='block';msg=3}
+function dialogBox(w,t,opts){dialog=true;document.getElementById('speaker').textContent=w;document.getElementById('dialogText').textContent=t;const c=document.getElementById('choices');c.innerHTML='';opts.forEach(o=>{const b=document.createElement('button');b.className='choice';b.textContent=o[0];b.onclick=o[1];c.appendChild(b)});document.getElementById('dialog').style.display='block'}
 function closeDialog(){dialog=false;document.getElementById('dialog').style.display='none';hud()}
-function interact(){if(dialog)return;if(player.group.position.distanceTo(lyra.group.position)<4){if(S.stage===0){openDialog('LYRA','Aren ! Tu as réussi à quitter la ferme. Viens. La guilde recrute des aventuriers.',[['Partir avec Lyra',()=>{S.stage=1;S.bond+=8;closeDialog();toast('Lyra devient ta partenaire. 🧡');save()}]])}else if(S.stage===1){openDialog('LYRA','Nous avons besoin de prouver notre valeur. Acceptons une mission de rang F.',[['Accepter la mission',()=>{S.stage=2;S.guild+=5;closeDialog();toast('Mission F : vaincre 3 monstres.');save()}]])}else if(S.stage===3){openDialog('LYRA','Tu as gagné. Ce n’est que le début de notre histoire.',[['Continuer',()=>{S.stage=4;S.rep+=10;S.guild+=12;S.gold+=40;xp(60);closeDialog();toast('🌲 La route vers la forêt profonde est ouverte.');save()}]])}else toast('Lyra : « Notre aventure ne fait que commencer. »');return}toast('Approche-toi de Lyra pour interagir.')}
-function attack(){if(!started||dialog||player.attackCd>0)return;player.attackCd=.45;let best=null,bd=3.4;for(const m of monsters){let d=player.group.position.distanceTo(m.group.position);if(d<bd){bd=d;best=m}}if(!best){toast('Aucun ennemi à portée.');return}const dmg=18+S.level*5;best.hp-=dmg;toast('⚔️ Coup porté : '+dmg);if(best.hp<=0){scene.remove(best.group);monsters.splice(monsters.indexOf(best),1);S.kills++;S.gold+=10;S.rep+=3;S.guild+=2;xp(28);if(S.stage===2&&S.kills>=3){S.stage=3;toast('Mission terminée ! Retourne voir Lyra.')}save()}}
-function potion(){if(S.potions<=0)return toast('Plus de potion.');if(S.hp>=S.maxHp)return toast('PV déjà au maximum.');S.potions--;S.hp=Math.min(S.maxHp,S.hp+45);save();toast('🧪 +45 PV')}
-function update(dt){if(!started||dialog)return;let x=(keys.d?1:0)-(keys.a?1:0),z=(keys.s?1:0)-(keys.w?1:0);if(x||z){const l=Math.hypot(x,z);x/=l;z/=l;const speed=player.speed*dt;player.group.position.x+=x*speed;player.group.position.z+=z*speed;player.group.rotation.y=Math.atan2(x,z)}player.group.position.x=Math.max(-58,Math.min(58,player.group.position.x));player.group.position.z=Math.max(-58,Math.min(58,player.group.position.z));for(const m of monsters){m.cd-=dt;const dx=player.group.position.x-m.group.position.x,dz=player.group.position.z-m.group.position.z,d=Math.hypot(dx,dz);if(d<20&&d>.01){m.group.position.x+=dx/d*m.speed*dt;m.group.position.z+=dz/d*m.speed*dt;m.group.rotation.y=Math.atan2(dx,dz)}if(d<1.7&&m.cd<=0){m.cd=1.1;S.hp=Math.max(0,S.hp-(6+S.level*2));toast('💥 Tu subis des dégâts !');if(S.hp<=0){S.hp=Math.floor(S.maxHp*.5);player.group.position.set(0,0,18);S.gold=Math.max(0,S.gold-15);toast('Tu as été vaincu et ramené au village.')}save()}}player.attackCd=Math.max(0,player.attackCd-dt);controls.target.lerp(new THREE.Vector3(player.group.position.x,1,player.group.position.z),.12);hud()}
-function animate(){requestAnimationFrame(animate);const now=performance.now(),dt=Math.min(.05,(now-last)/1000);last=now;update(dt);if(msgTime>0){msgTime-=dt;if(msgTime<=0)document.getElementById('message').style.display='none'}controls.update();renderer.render(scene,camera)}
-buildWorld();initActors();for(let i=0;i<6;i++)spawnMonster();hud();
-addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' '){e.preventDefault();attack()}if(e.key.toLowerCase()==='e')interact();if(e.key.toLowerCase()==='p')potion()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
-document.querySelectorAll('[data-key]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();keys[b.dataset.key]=true});['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,()=>keys[b.dataset.key]=false))});
-document.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('pointerdown',()=>({attack,potion,interact}[b.dataset.act])()));
-document.getElementById('start').onclick=()=>{window.__otakuStarted=true;started=true;document.getElementById('intro').style.display='none';toast('Bienvenue dans Renaissance 3D. Retrouve Lyra.');};
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
-animate();
-</script><script>
-// Démarrage de secours : le bouton réagit même si une erreur survient ensuite.
-window.addEventListener('error', function(e){
-  if(!window.__otakuStarted){
-    const btn=document.getElementById('start');
-    if(btn){btn.textContent='RECHARGER LE JEU';btn.onclick=()=>location.reload();}
-  }
-});
+function interact(){if(!started||dialog)return;if(Math.hypot(player.x-lyra.x,player.z-lyra.z)<4){if(S.stage===0)dialogBox('LYRA','Aren ! Tu es enfin libre. La guilde recrute des aventuriers.',[['Partir avec Lyra',()=>{S.stage=1;S.bond+=8;closeDialog();toast('Lyra rejoint ton aventure.');save()}]]);else if(S.stage===1)dialogBox('LYRA','Commençons par une mission de rang F : vaincre trois monstres.',[['Accepter',()=>{S.stage=2;S.guild+=5;closeDialog();toast('Mission F commencée.');save()}]]);else if(S.stage===3)dialogBox('LYRA','Tu as réussi. Notre vraie aventure commence maintenant.',[['Continuer',()=>{S.stage=4;S.rep+=10;S.guild+=12;S.gold+=40;gainxp(60);closeDialog();toast('🌲 Une nouvelle région est ouverte.');save()}]]);else toast('Lyra : Notre aventure ne fait que commencer.');}else toast('Approche-toi de Lyra.')}
+function potion(){if(S.potions<=0)return toast('Plus de potion.');if(S.hp>=S.maxHp)return toast('PV au maximum.');S.potions--;S.hp=Math.min(S.maxHp,S.hp+45);save();toast('🧪 +45 PV')}
+function attack(){if(!started||dialog||attackCd>0)return;attackCd=.38;let best=null,bd=3.1;for(const e of enemies){const d=Math.hypot(player.x-e.x,player.z-e.z);if(d<bd){bd=d;best=e}}if(!best)return toast('Aucun ennemi à portée.');const dmg=18+S.level*5;best.hp-=dmg;toast('⚔️ '+dmg+' dégâts');if(best.hp<=0){enemies.splice(enemies.indexOf(best),1);S.kills++;S.gold+=10;S.rep+=3;S.guild+=2;gainxp(28);if(S.stage===2&&S.kills>=3){S.stage=3;toast('Mission terminée ! Retourne voir Lyra.')}save();}}
+function spawn(){const a=Math.random()*6.28,r=12+Math.random()*30;enemies.push({x:Math.cos(a)*r,z:Math.sin(a)*r,hp:45+S.level*8,cd:0})}
+for(let i=0;i<7;i++)spawn();hud();
+addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' '){e.preventDefault();attack()}if(e.key.toLowerCase()==='e')interact();if(e.key.toLowerCase()==='p')potion()});
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.onpointerdown=e=>{e.preventDefault();keys[k]=true};b.onpointerup=b.onpointercancel=b.onpointerleave=()=>keys[k]=false});
+document.querySelectorAll('[data-act]').forEach(b=>b.onpointerdown=()=>({attack,potion,interact}[b.dataset.act])());
+start.onclick=function(){started=true;document.getElementById('intro').style.display='none';toast('Bienvenue dans Renaissance. Retrouve Lyra.');last=performance.now();};
+function resize(){const d=Math.min(devicePixelRatio||1,2);canvas.width=innerWidth*d;canvas.height=innerHeight*d;gl.viewport(0,0,canvas.width,canvas.height)}addEventListener('resize',resize);resize();
+
+function matMul(a,b){const r=new Float32Array(16);for(let c=0;c<4;c++)for(let row=0;row<4;row++)r[c*4+row]=a[row]*b[c*4]+a[4+row]*b[c*4+1]+a[8+row]*b[c*4+2]+a[12+row]*b[c*4+3];return r}
+function perspective(fov,asp,n,f){const q=1/Math.tan(fov/2),nf=1/(n-f);return new Float32Array([q/asp,0,0,0,0,q,0,0,0,0,(f+n)*nf,-1,0,0,2*f*n*nf,0])}
+function look(eye,target){let zx=eye[0]-target[0],zy=eye[1]-target[1],zz=eye[2]-target[2],l=Math.hypot(zx,zy,zz);zx/=l;zy/=l;zz/=l;let xx=zy,xy=-zx,xz=0,l2=Math.hypot(xx,xy);xx/=l2;xy/=l2;let yx=xy*zz,y y=0;return null}
+function camMatrix(){const asp=canvas.width/canvas.height, fov=1.0;const eye=[player.x+9,8,player.z+11],t=[player.x,1,player.z];let zx=eye[0]-t[0],zy=eye[1]-t[1],zz=eye[2]-t[2],l=Math.hypot(zx,zy,zz);zx/=l;zy/=l;zz/=l;let xx=zz,xy=0,xz=-zx,lx=Math.hypot(xx,xz);xx/=lx;xz/=lx;let yx=zy*xz,yy=zz*xx-zx*xz,yz=zy*xx;const v=new Float32Array([xx,yx,zx,0,xy,yy,zy,0,xz,yz,zz,0,-(xx*eye[0]+xy*eye[1]+xz*eye[2]),-(yx*eye[0]+yy*eye[1]+yz*eye[2]),-(zx*eye[0]+zy*eye[1]+zz*eye[2]),1]);return matMul(perspective(fov,asp,.1,160),v)}
+function cube(x,y,z,sx,sy,sz,color){const X=sx/2,Y=sy/2,Z=sz/2;const p=[-X,-Y,-Z,X,-Y,-Z,X,Y,-Z,-X,Y,-Z,-X,-Y,Z,X,-Y,Z,X,Y,Z,-X,Y,Z];const idx=[0,1,2,0,2,3,1,5,6,1,6,2,5,4,7,5,7,6,4,0,3,4,3,7,3,2,6,3,6,7,4,5,1,4,1,0];const col=[];for(let i=0;i<8;i++)col.push(color[0],color[1],color[2]);draw(p,idx,col,[x,y,z])}
+function draw(p,idx,c,pos){const v=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,v);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(p),gl.STREAM_DRAW);gl.enableVertexAttribArray(locP);gl.vertexAttribPointer(locP,3,gl.FLOAT,false,0,0);const cb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(c),gl.STREAM_DRAW);gl.enableVertexAttribArray(locC);gl.vertexAttribPointer(locC,3,gl.FLOAT,false,0,0);const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),gl.STREAM_DRAW);let m=camMatrix();m[12]+=0;m[13]+=0;m[14]+=0;const model=new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,pos[0],pos[1],pos[2],1]);gl.uniformMatrix4fv(locM,false,matMul(m,model));gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0)}
+function humanoid(x,z,body,head){cube(x,1,z,.9,1.8,.65,body);cube(x,2.25,z,.7,.7,.7,head);cube(x-.58,1,z,.25,1.4,.3,body);cube(x+.58,1,z,.25,1.4,.3,body);cube(x-.25,.05,z,.3,.8,.35,body);cube(x+.25,.05,z,.3,.8,.35,body)}
+function render(){gl.enable(gl.DEPTH_TEST);gl.clearColor(.18,.28,.38,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+cube(0,-.35,0,120,.5,120,[.16,.38,.2]);cube(0,-.05,0,7,.08,120,[.55,.43,.28]);cube(0,-.04,0,120,.08,7,[.55,.43,.28]);
+for(let i=-50;i<=50;i+=10){cube(i,1,-35,5,3,5,[.28,.18,.13]);cube(i,3,-35,5,1,5,[.45,.18,.14]);}
+for(const p of [[-3,8]]){} humanoid(player.x,player.z,[.18,.38,.85],[.85,.62,.45]);humanoid(lyra.x,lyra.z,[.55,.32,.9],[.85,.62,.45]);
+for(const e of enemies){humanoid(e.x,e.z,[.55,.12,.2],[.35,.12,.15]);cube(e.x,2.8,e.z,1.4,.12,.2,[.8,.15,.15])}
+}
+function loop(t){const dt=Math.min(.05,(t-last||16)/1000);last=t;if(started&&!dialog){let x=(keys.d?1:0)-(keys.a?1:0),z=(keys.s?1:0)-(keys.w?1:0);if(x||z){const l=Math.hypot(x,z);player.x+=x/l*6*dt;player.z+=z/l*6*dt}player.x=Math.max(-55,Math.min(55,player.x));player.z=Math.max(-55,Math.min(55,player.z));for(const e of enemies){e.cd-=dt;const dx=player.x-e.x,dz=player.z-e.z,d=Math.hypot(dx,dz);if(d<22&&d>.2){e.x+=dx/d*2*dt;e.z+=dz/d*2*dt}if(d<1.5&&e.cd<=0){e.cd=1;S.hp=Math.max(0,S.hp-(6+S.level*2));toast('💥 Tu as été touché !');if(S.hp===0){S.hp=S.maxHp/2;player.x=0;player.z=18;S.gold=Math.max(0,S.gold-15);toast('Tu as été vaincu.');}save()}}attackCd=Math.max(0,attackCd-dt);hud();if(msg>0){msg-=dt;if(msg<=0)document.getElementById('message').style.display='none'}}render();requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+})();
 </script></body></html>
