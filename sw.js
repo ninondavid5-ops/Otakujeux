@@ -1,4 +1,4 @@
-const CACHE='otakujeux-runtime-v1';
+const CACHE='otakujeux-runtime-v2';
 self.addEventListener('fetch',event=>{
  const u=new URL(event.request.url);
  if(event.request.method!=='GET') return;
@@ -6,6 +6,14 @@ self.addEventListener('fetch',event=>{
  const isHero=u.href==='https://threejs.org/examples/models/gltf/Soldier.glb'||u.href==='https://threejs.org/examples/models/gltf/Michelle.glb';
  if(!isGame&&!isHero)return;
  event.respondWith(caches.open(CACHE).then(async cache=>{
+   const isCore=u.pathname.endsWith('/game.js')||u.pathname.endsWith('/index.html');
+   if(isCore){
+     try{
+       const res=await fetch(event.request);
+       if(res.ok) cache.put(event.request,res.clone());
+       return res;
+     }catch(e){return cache.match(event.request)||Response.error();}
+   }
    const hit=await cache.match(event.request);
    if(hit)return hit;
    try{
