@@ -41,7 +41,7 @@ ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
 const path=new THREE.Mesh(new THREE.PlaneGeometry(7,100),new THREE.MeshStandardMaterial({color:0xb99a6b,roughness:1}));
 path.rotation.x=-Math.PI/2;path.position.y=.012;scene.add(path);
 const loader=new THREE.GLTFLoader();
-loader.register((parser)=>new THREE.VRMLoaderPlugin(parser));
+loader.register((parser)=>new THREE_VRM.VRMLoaderPlugin(parser));
 loader.crossOrigin='anonymous';
 const ASSETS={
 aren:'https://arweave.net/-eJyDjujQRvakRImdvulg-1dKQkPwMeQv-55IbKqLh4',
