@@ -2,101 +2,87 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>OtakuJeux — Renaissance</title>
 <style>
-:root{--bg:#090b14;--panel:#121629;--panel2:#191e35;--text:#f4f5ff;--muted:#9da5c7;--accent:#9b7cff;--gold:#f5c85b;--danger:#ff667a;--good:#62d99b}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#20274b 0,#090b14 45%);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
-button{font:inherit;cursor:pointer;border:0}.app{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.logo{font-weight:900;letter-spacing:.5px;font-size:24px}.logo span{color:var(--accent)}.save{color:var(--muted);font-size:12px}
-.grid{display:grid;grid-template-columns:1.45fr .8fr;gap:14px}.panel{background:rgba(18,22,41,.9);border:1px solid #2b3150;border-radius:18px;padding:18px;box-shadow:0 14px 45px #0005}.hero{min-height:300px;background:linear-gradient(145deg,#22294d,#111528)}
-h1,h2,h3{margin:0 0 10px}.eyebrow{color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:1.4px;font-weight:800}.story{font-size:18px;line-height:1.65;color:#eef0ff}.choices{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}.btn{background:var(--accent);color:white;padding:11px 15px;border-radius:11px;font-weight:800}.btn.alt{background:#272e4c}.btn.gold{background:#a87820}.btn.red{background:#9d3348}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.stat{background:#0d1120;border:1px solid #282e49;border-radius:12px;padding:10px}.stat small{display:block;color:var(--muted)}.stat b{font-size:19px}.bar{height:7px;background:#282d45;border-radius:9px;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:var(--accent)}
-.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tab{background:#161b30;color:#aab1d1;padding:9px 12px;border-radius:10px;white-space:nowrap}.tab.active{background:#30265b;color:white}
-.log{height:165px;overflow:auto;font-size:13px;color:#b9c0dc;line-height:1.5;background:#0c0f1c;border-radius:12px;padding:10px}.log p{margin:0 0 6px}
-.card{background:#0e1221;border:1px solid #272d49;border-radius:13px;padding:12px;margin-bottom:8px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.tag{font-size:11px;color:#c7b9ff;background:#2a2250;padding:4px 7px;border-radius:7px}.muted{color:var(--muted)}.good{color:var(--good)}.danger{color:var(--danger)}.gold{color:var(--gold)}
-@media(max-width:850px){.grid{grid-template-columns:1fr}.hero{min-height:auto}.story{font-size:16px}.app{padding:10px}.top{align-items:flex-start}.stats{grid-template-columns:repeat(2,1fr)}}
+*{box-sizing:border-box}html,body{margin:0;background:#070912;color:#fff;font-family:system-ui,Arial;overflow:hidden;height:100%}
+#wrap{height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#17203a,#05060b)}
+#game{position:relative;width:min(1100px,100vw);height:min(720px,100vh);overflow:hidden;background:#111}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+#hud{position:absolute;left:12px;top:12px;right:12px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
+.panel{background:#090d18dd;border:1px solid #526080;border-radius:12px;padding:9px 12px;box-shadow:0 8px 25px #0008}
+#stats{min-width:220px}.bar{height:8px;background:#272d3c;border-radius:9px;overflow:hidden;margin-top:4px}.hp{height:100%;background:#e95d70}.xp{height:100%;background:#8e72ff}
+#quest{max-width:330px;text-align:right}small{color:#aab4cf}
+#msg{position:absolute;left:50%;bottom:105px;transform:translateX(-50%);background:#080b15eF;border:1px solid #586582;border-radius:12px;padding:10px 15px;max-width:90%;text-align:center;display:none}
+#dialog{position:absolute;left:4%;right:4%;bottom:22px;background:#090d18f5;border:2px solid #7566c9;border-radius:15px;padding:14px;display:none}
+#dialog b{color:#d7cfff;font-size:18px}.choice{display:inline-block;background:#29244c;border:1px solid #7367bd;color:white;padding:8px 11px;border-radius:9px;margin:8px 7px 0 0;cursor:pointer}
+#touch{position:absolute;bottom:18px;left:18px;right:18px;display:flex;justify-content:space-between;pointer-events:none}
+.dpad{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:48px 48px 48px;gap:5px;pointer-events:auto}.dpad button,.actions button{background:#11182bd9;color:white;border:1px solid #687396;border-radius:12px;font-size:21px}.up{grid-column:2}.left{grid-column:1;grid-row:2}.down{grid-column:2;grid-row:2}.right{grid-column:3;grid-row:2}
+.actions{display:flex;gap:8px;align-items:end;pointer-events:auto}.actions button{width:58px;height:58px;font-size:13px;font-weight:800}
+#start{position:absolute;inset:0;background:linear-gradient(#0b1020ee,#090b12f5);display:flex;align-items:center;justify-content:center;text-align:center;z-index:5}.startbox{max-width:600px;padding:30px}.startbox h1{font-size:clamp(34px,7vw,70px);margin:0}.startbox h1 span{color:#a98cff}.startbox p{color:#b8c0d9;line-height:1.6}.startbox button{background:#8f70ff;color:white;border:0;padding:14px 24px;border-radius:12px;font-size:17px;font-weight:800;cursor:pointer}
+@media(max-width:700px){#hud{font-size:12px}.panel{padding:7px 9px}#stats{min-width:155px}#quest{max-width:210px}.dpad button{width:48px;height:48px}#msg{bottom:105px}}
 </style>
 </head>
 <body>
-<div class="app">
-<div class="top"><div class="logo">OTAKU<span>JEUX</span> · RENAISSANCE</div><div class="save" id="saveState">Sauvegarde locale active</div></div>
-<div class="grid">
-<main>
-<section class="panel hero">
-<div class="eyebrow" id="chapter">Chapitre 1 · Les cendres du passé</div>
-<h1 id="title">Une seconde vie</h1>
-<div class="story" id="story"></div>
-<div class="choices" id="choices"></div>
-</section>
-<section class="panel" style="margin-top:14px">
-<div class="tabs">
-<button class="tab active" data-tab="missions">Missions</button><button class="tab" data-tab="party">Compagnons</button><button class="tab" data-tab="guild">Guilde</button><button class="tab" data-tab="journal">Journal</button>
-</div>
-<div id="content"></div>
-</section>
-</main>
-<aside>
-<section class="panel">
-<h2>Profil</h2>
-<div class="row"><span id="nameLabel">Aren</span><span class="tag" id="rank">F</span></div>
-<div class="muted" style="margin:4px 0 12px">Réputation <b class="gold" id="rep">0</b></div>
-<div class="stats" id="stats"></div>
-</section>
-<section class="panel" style="margin-top:14px">
-<h3>État du monde</h3><div class="stats">
-<div class="stat"><small>Or</small><b id="gold">20</b></div><div class="stat"><small>Niveau</small><b id="level">1</b></div>
-<div class="stat"><small>Guilde</small><b id="guildRank">F</b></div><div class="stat"><small>Relation Lyra</small><b id="bond">10</b></div>
-</div>
-</section>
-<section class="panel" style="margin-top:14px"><h3>Chronique</h3><div class="log" id="log"></div></section>
-</aside>
-</div>
-</div>
+<div id="wrap"><div id="game">
+<canvas id="canvas" width="1100" height="720"></canvas>
+<div id="hud"><div id="stats" class="panel"></div><div id="quest" class="panel"></div></div>
+<div id="msg"></div>
+<div id="dialog"><b id="speaker"></b><div id="dialogText"></div><div id="choices"></div></div>
+<div id="touch"><div class="dpad"><button class="up" data-key="ArrowUp">▲</button><button class="left" data-key="ArrowLeft">◀</button><button class="down" data-key="ArrowDown">▼</button><button class="right" data-key="ArrowRight">▶</button></div><div class="actions"><button data-action="attack">ATQ</button><button data-action="interact">PARLER</button><button data-action="potion">POT.</button></div></div>
+<div id="start"><div class="startbox"><h1>OTAKU<span>JEUX</span></h1><h2>RENAISSANCE</h2><p>Une vraie aventure commence ici.<br>Explore le village, retrouve Lyra, accepte ta première mission et combats les monstres.</p><p><small>Clavier : WASD / flèches · E : parler · ESPACE : attaquer · P : potion</small></p><button id="startBtn">COMMENCER L'AVENTURE</button></div></div>
+</div></div>
 <script>
-const KEY="otakujeux_renaissance_v1";
-const base={name:"Aren",chapter:0,level:1,xp:0,hp:100,maxHp:100,mp:40,maxMp:40,atk:12,def:7,agi:8,gold:20,rep:0,guild:0,bond:10,storyFlags:{},inventory:["Pain rassis"],missions:[],companions:[{name:"Lyra",role:"Éclaireuse",bond:10,active:true}],log:[]};
-let S=load(); let currentTab="missions";
-function load(){try{return Object.assign({},base,JSON.parse(localStorage.getItem(KEY)||"{}"),{storyFlags:Object.assign({},base.storyFlags,(JSON.parse(localStorage.getItem(KEY)||"{}").storyFlags||{}))})}catch{return structuredClone(base)}}
-function save(){localStorage.setItem(KEY,JSON.stringify(S));document.getElementById("saveState").textContent="Sauvegardé · "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
-function log(t){S.log.unshift(t);S.log=S.log.slice(0,30);save();renderLog()}
-function xpNeed(){return 60+(S.level-1)*45}
-function gainXP(n){S.xp+=n; while(S.xp>=xpNeed()){S.xp-=xpNeed();S.level++;S.maxHp+=12;S.hp=S.maxHp;S.maxMp+=6;S.mp=S.maxMp;S.atk+=3;S.def+=2;S.agi+=1;log("✨ Niveau "+S.level+" atteint. Tes capacités progressent.");}}
-function rep(n){S.rep=Math.max(0,S.rep+n);S.guild=Math.max(0,Math.min(100,S.guild+n))}
-function setStory(i){S.chapter=i;save();renderStory()}
-function renderStats(){document.getElementById("level").textContent=S.level;document.getElementById("gold").textContent=S.gold;document.getElementById("rep").textContent=S.rep;document.getElementById("guildRank").textContent=rank();document.getElementById("rank").textContent=rank();document.getElementById("bond").textContent=S.bond;
-document.getElementById("stats").innerHTML=[["PV",S.hp+"/"+S.maxHp],["PM",S.mp+"/"+S.maxMp],["ATQ",S.atk],["DEF",S.def],["AGI",S.agi],["XP",S.xp+"/"+xpNeed()]].map(x=>'<div class="stat"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>').join("")}
+"use strict";
+const c=document.getElementById("canvas"),ctx=c.getContext("2d"),W=c.width,H=c.height;
+const KEY="otakujeux_real_v1";
+const base={x:150,y:500,hp:100,maxHp:100,mp:30,maxMp:30,level:1,xp:0,gold:25,rep:0,guild:0,bond:15,potions:2,stage:0,kills:0,log:[],saved:false};
+let S=Object.assign({},base);try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){}
+const keys={};let running=false,dialog=false,msgTimer=0,last=0;
+const player={r:18,speed:220,attackCd:0,hit:0};
+const world={monsters:[],spawn:0};
+const npc={x:520,y:350};
+const gate={x:1000,y:90};
+function save(){localStorage.setItem(KEY,JSON.stringify(S));S.saved=true;updateHud();}
+function xpNeed(){return 70+(S.level-1)*50}
 function rank(){return S.guild>=80?"S":S.guild>=60?"A":S.guild>=40?"B":S.guild>=25?"C":S.guild>=12?"D":S.guild>=5?"E":"F"}
-function renderLog(){document.getElementById("log").innerHTML=S.log.map(x=>"<p>"+x+"</p>").join("")||"<p>Ton histoire commence ici.</p>"}
-function renderStory(){
-const stories=[
-{c:"Chapitre 1 · Les cendres du passé",t:"Une seconde vie",p:"Tu te souviens d'une vie où personne ne connaissait ton nom. Puis la mort. Puis le réveil. Dans ce nouveau monde, tu es né dans une ferme isolée. Les années ont passé sous le joug de la servitude. Aujourd'hui, à 16 ans, tu regardes l'horizon et comprends une chose : cette vie ne sera pas une copie de la précédente.",o:[["Supporter encore","Sors travailler malgré l'épuisement.",()=>{S.hp=Math.max(35,S.hp-8);gainXP(15);rep(1);log("Tu travailles jusqu'au coucher du soleil. La ferme te respecte un peu plus.");setStory(1)}],["Rêver plus grand","Promets-toi de devenir aventurier.",()=>{S.rep+=2;S.bond+=1;gainXP(20);log("Une promesse naît en toi : un jour, ton nom sera connu.");setStory(1)}]]},
-{c:"Chapitre 2 · La route",t:"La fille du chemin",p:"Sur la route du marché, tu retrouves Lyra, ton amie d'enfance. Elle aussi rêve de quitter la ferme. Elle te parle d'une guilde d'aventuriers dans la ville voisine. Pour y entrer, il faudra survivre à l'épreuve d'admission.",o:[["Partir avec Lyra","Vous économisez vos maigres pièces et préparez vos affaires.",()=>{S.gold+=10;S.bond+=8;log("Lyra décide de partir avec toi. Votre confiance augmente.");setStory(2)}],["Partir seul","Tu refuses de la mettre en danger.",()=>{S.rep+=3;S.gold+=15;log("Lyra est blessée par ton choix, mais respecte ta détermination.");setStory(2)}]]},
-{c:"Chapitre 3 · Guilde des aventuriers",t:"Le premier contrat",p:"La ville est immense. À la guilde, ton passé ne disparaît pas : certains aventuriers te regardent de haut. Mais le registre ne demande qu'une chose : prouver ta valeur. Une mission de rang F attend les nouveaux.",o:[["Accepter la mission","Une meute de loups attaque les fermes à l'est.",()=>missionWolf()],["Demander une mission plus risquée","Tu veux impressionner la guilde dès le départ.",()=>{S.guild+=3;S.gold+=5;log("Le maître de guilde te trouve audacieux. Mais tu dois encore faire tes preuves.");missionWolf()}]]},
-{c:"Chapitre 4 · Première chasse",t:"Les loups de la colline",p:"La forêt s'assombrit. Trois loups apparaissent. Lyra serre son arc. C'est votre premier vrai combat.",o:[["Combattre ensemble","Déclenchez votre première attaque synchronisée.",()=>combat(true)],["Protéger Lyra","Tu encaisses le premier assaut.",()=>{S.hp=Math.max(1,S.hp-15);S.bond+=5;combat(false)}]]},
-{c:"Chapitre 5 · Une réputation naissante",t:"Le retour à la guilde",p:"Vous revenez avec les preuves de la chasse. Des aventuriers qui ne te regardaient même pas commencent à retenir ton nom. Ce n'est qu'un début.",o:[["Demander une nouvelle mission","Tu veux continuer à progresser.",()=>{S.guild+=10;rep(8);gainXP(35);S.gold+=35;log("Mission réussie. Réputation et récompense obtenues.");setStory(5)}],["Parler à Lyra","Vous célébrez votre première victoire.",()=>{S.bond+=12;gainXP(25);log("Lyra te dit qu'elle croit réellement en toi.");setStory(5)}]]},
-{c:"Chapitre 6 · La ville vous remarque",t:"Un nom commence à circuler",p:"Les missions s'enchaînent. Ta force augmente, mais ton véritable pouvoir est ailleurs : les gens commencent à raconter ce que tu accomplis. Certains voient encore ton passé. D'autres voient l'aventurier que tu deviens.",o:[["Poursuivre les monstres","Débloquer la zone de la forêt profonde.",()=>{S.guild+=15;rep(12);gainXP(60);S.gold+=50;log("La Forêt profonde est désormais accessible.");setStory(6)}],["Construire des relations","Gagne la confiance des habitants.",()=>{S.bond+=15;rep(10);S.gold+=25;gainXP(45);log("Les habitants commencent à parler de toi avec respect.");setStory(6)}]},
-{c:"Chapitre 7 · La forêt profonde",t:"Le premier boss",p:"Au cœur des arbres, une créature gigantesque garde un ancien sanctuaire. Votre victoire pourrait changer votre rang de guilde.",o:[["Affronter le gardien","Le combat le plus difficile depuis votre arrivée.",()=>boss()],["Revenir mieux préparé","Tu refuses de risquer la vie de ton équipe.",()=>{S.hp=S.maxHp;S.mp=S.maxMp;S.gold+=20;log("Tu reviens à la guilde pour préparer la suite.");}]]},
-{c:"Chapitre 8 · Renaissance",t:"Le début de la légende",p:"Le sanctuaire révèle une inscription : « Celui qui change son destin change aussi celui des autres. » Tu comprends enfin que récupérer ton ancienne gloire n'est pas ton véritable objectif. Tu veux créer une nouvelle histoire, avec ceux qui t'ont choisi.",o:[["Continuer l'aventure","La V1 se termine ici — mais ton aventure commence.",()=>{S.guild=100;rep(20);gainXP(100);log("🏆 FIN DE L'ARC V1 — Rang S atteint. L'aventure peut continuer.");renderStory()}]]}
-];
-const s=stories[Math.min(S.chapter,stories.length-1)];document.getElementById("chapter").textContent=s.c;document.getElementById("title").textContent=s.t;document.getElementById("story").textContent=s.p;document.getElementById("choices").innerHTML=s.o.map((x,i)=>'<button class="btn '+(i?'alt':'')+'" onclick="choose('+i+')">'+x[0]+'</button>').join("");window._story=s;renderStats();renderLog();renderTab()}
-function choose(i){window._story.o[i][2]();renderStats();save()}
-function missionWolf(){setStory(3);log("📜 Mission F : éliminer les loups de la colline.")}
-function combat(synergy){
-let enemy=62+S.level*8;let turns=0;let bonus=synergy?(S.bond>=20?1.55:1.3):1;
-while(enemy>0&&S.hp>0){turns++;let dmg=Math.max(5,Math.floor((S.atk+(S.agi>10?4:0))*bonus));enemy-=dmg;if(enemy>0)S.hp-=Math.max(3,8+Math.floor(Math.random()*8)-Math.floor(S.def/3))}
-if(S.hp<=0){S.hp=20;S.gold=Math.max(0,S.gold-10);log("Tu es tombé au combat. La guilde te ramène en sécurité.");return}
-let reward=35+turns*3;S.gold+=reward;gainXP(45);rep(8);S.guild+=8;if(synergy)S.bond+=7;log("⚔️ Victoire ! "+reward+" or, expérience et réputation gagnés.");setStory(4)}
-function boss(){let power=S.atk+S.def+S.agi+S.level*8;if(power<65){S.hp=Math.max(1,S.hp-25);log("Le gardien est trop puissant. Prépare-toi davantage.");return}S.gold+=100;gainXP(120);rep(25);S.guild+=25;S.bond+=15;log("👑 Boss vaincu ! Ta victoire fait parler de toi dans toute la guilde.");setStory(7)}
-function renderTab(){
-const c=document.getElementById("content");
-if(currentTab==="missions")c.innerHTML='<div class="card"><div class="row"><b>Contrat de progression</b><span class="tag">RANG '+rank()+'</span></div><p class="muted">Continue l'histoire pour débloquer des missions, zones et récompenses.</p></div><div class="card"><b>Progression</b><div class="bar"><i style="width:'+Math.min(100,(S.xp/xpNeed())*100)+'%"></i></div><p class="muted">XP '+S.xp+' / '+xpNeed()+'</p></div>';
-if(currentTab==="party")c.innerHTML='<div class="card"><div class="row"><b>Lyra</b><span class="tag">Éclaireuse</span></div><p class="muted">Amie d'enfance · partenaire de combat</p><b>Confiance : '+S.bond+'/100</b><div class="bar"><i style="width:'+S.bond+'%"></i></div><p>À 20+ : synergie améliorée. À 50+ : nouvelles scènes et attaques combinées.</p></div>';
-if(currentTab==="guild")c.innerHTML='<div class="card"><b>Guilde des aventuriers</b><p class="muted">Rang actuel : '+rank()+'</p><div class="bar"><i style="width:'+S.guild+'%"></i></div><p>Réputation : '+S.rep+' · Progression guilde : '+S.guild+'/100</p></div><div class="card"><b>Rangs</b><p>F → E → D → C → B → A → S</p></div>';
-if(currentTab==="journal")c.innerHTML='<div class="card"><b>Inventaire</b><p>'+S.inventory.join(" · ")+'</p></div><div class="card"><b>Chronique</b><p class="muted">Tes choix modifient réputation, relations, récompenses et accès futurs.</p></div>';
-}
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentTab=b.dataset.tab;renderTab()});
-renderStory();
-if(!S.log.length){log("Bienvenue dans Renaissance. Ton histoire commence.");}
+function note(t){S.log.unshift(t);S.log=S.log.slice(0,20);showMsg(t);save()}
+function showMsg(t){const e=document.getElementById("msg");e.textContent=t;e.style.display="block";msgTimer=3}
+function gainXP(n){S.xp+=n;while(S.xp>=xpNeed()){S.xp-=xpNeed();S.level++;S.maxHp+=15;S.hp=S.maxHp;S.maxMp+=5;S.mp=S.maxMp;note("Niveau "+S.level+" ! Tes capacités augmentent.");}}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function updateHud(){document.getElementById("stats").innerHTML="<b>AREN</b> · Rang "+rank()+"<br>PV "+S.hp+"/"+S.maxHp+" · Niveau "+S.level+" · Or "+S.gold+"<div class='bar'><div class='hp' style='width:"+(S.hp/S.maxHp*100)+"%'></div></div><div class='bar'><div class='xp' style='width:"+(S.xp/xpNeed()*100)+"%'></div></div><small>XP "+S.xp+"/"+xpNeed()+" · Réputation "+S.rep+" · Lyra "+S.bond+"</small>";
+let q=S.stage===0?"Objectif : retrouver Lyra au village.":S.stage===1?"Objectif : parler à Lyra et rejoindre la guilde.":S.stage===2?"Mission F : vaincre 3 loups. ("+S.kills+"/3)":S.stage===3?"Retourne à la guilde pour ta récompense.":"Explore la forêt et cherche le prochain défi.";
+document.getElementById("quest").innerHTML="<b>QUÊTE</b><br>"+q+"<br><small>Guilde "+rank()+" · Potions "+S.potions+"</small>"}
+function resetWorld(){world.monsters=[];for(let i=0;i<5;i++)spawnMonster(680+Math.random()*330,180+Math.random()*400)}
+function spawnMonster(x,y){world.monsters.push({x,y,r:17,hp:32+S.level*6,max:32+S.level*6,speed:45+Math.random()*20,atk:6+S.level*2,hit:0})}
+function solid(x,y){return x<45||y<70||x>1055||y>680||((x>300&&x<470)&&(y>90&&y<250))||((x>760&&x<910)&&(y>70&&y<170))}
+function move(dt){let dx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0),dy=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0);if(dx||dy){let l=Math.hypot(dx,dy);dx/=l;dy/=l;let nx=player.x+dx*player.speed*dt,ny=player.y+dy*player.speed*dt;if(!solid(nx,player.y))player.x=nx;if(!solid(player.x,ny))player.y=ny}}
+function attack(){if(!running||dialog||player.attackCd>0)return;player.attackCd=.38;player.hit=.16;let target=null,md=70;for(const m of world.monsters){let d=dist(player,m);if(d<md){md=d;target=m}}if(!target){showMsg("Aucun ennemi à portée.");return}let dmg=12+S.level*4+Math.floor(Math.random()*6);target.hp-=dmg;if(target.hp<=0){world.monsters=world.monsters.filter(m=>m!==target);S.gold+=8;S.kills++;S.rep+=3;S.guild+=2;gainXP(25);note("⚔️ Loup vaincu ! +25 XP, +8 or.");if(S.stage===2&&S.kills>=3){S.stage=3;note("Mission accomplie. Retourne voir le maître de guilde.")}}else showMsg("Coup porté : -"+dmg+" PV")}
+function potion(){if(S.potions<=0){showMsg("Tu n'as plus de potion.");return}if(S.hp>=S.maxHp){showMsg("Tes PV sont déjà au maximum.");return}S.potions--;S.hp=Math.min(S.maxHp,S.hp+45);note("Potion utilisée : +45 PV.")}
+function interact(){if(dialog)return; if(dist(player,npc)<80){if(S.stage===0){openDialog("Lyra","Tu es enfin arrivé ! Je savais que tu viendrais. La guilde nous attend.",[["Partir avec Lyra",()=>{S.bond+=8;S.stage=1;closeDialog();note("Lyra rejoint ton aventure.")}]])}else if(S.stage===1){openDialog("Lyra","Le maître de guilde peut nous donner notre première mission.",[["Entrer dans la guilde",()=>{S.guild+=5;S.stage=2;closeDialog();note("📜 Mission F acceptée : vaincre 3 loups.")}]])}else if(S.stage===3){openDialog("Lyra","Tu l'as fait ! Ton nom commence déjà à circuler.",[["Continuer",()=>{S.stage=4;S.rep+=10;S.guild+=12;gainXP(60);S.gold+=40;closeDialog();note("Nouvelle zone débloquée : la forêt profonde.")}]])}else showMsg("Lyra sourit : notre aventure ne fait que commencer.");return}
+if(dist(player,gate)<100&&S.stage>=4){note("La forêt profonde s'ouvre devant toi...")}
+else showMsg("Rien d'intéressant ici.")}
+function openDialog(who,text,opts){dialog=true;document.getElementById("speaker").textContent=who;document.getElementById("dialogText").textContent=text;document.getElementById("choices").innerHTML="";opts.forEach(o=>{let b=document.createElement("button");b.className="choice";b.textContent=o[0];b.onclick=o[1];document.getElementById("choices").appendChild(b)});document.getElementById("dialog").style.display="block"}
+function closeDialog(){dialog=false;document.getElementById("dialog").style.display="none";updateHud()}
+function enemyAI(dt){for(const m of world.monsters){let d=dist(player,m);if(d<260){let dx=(player.x-m.x)/d,dy=(player.y-m.y)/d;m.x+=dx*m.speed*dt;m.y+=dy*m.speed*dt}if(m.hit>0)m.hit-=dt;if(d<38&&m.hit<=0){m.hit=.8;S.hp=Math.max(0,S.hp-m.atk);showMsg("Le monstre t'inflige "+m.atk+" dégâts.");if(S.hp<=0){S.hp=Math.floor(S.maxHp*.5);S.gold=Math.max(0,S.gold-10);player.x=150;player.y=500;note("Tu as été vaincu. La guilde t'a ramené au village.")}}}}
+function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle="#1b3828";ctx.fillRect(0,0,W,H);
+ctx.fillStyle="#214a30";for(let x=0;x<W;x+=80)for(let y=70;y<H;y+=80){ctx.fillRect(x+8,y+10,3,3);ctx.fillRect(x+42,y+50,2,2)}
+ctx.fillStyle="#b18b65";ctx.fillRect(0,300,W,90);ctx.fillRect(480,0,90,H);ctx.fillStyle="#c8a77b";ctx.fillRect(0,330,W,28);ctx.fillRect(500,0,28,H);
+ctx.fillStyle="#59483c";ctx.fillRect(300,90,170,160);ctx.fillStyle="#a66c4e";ctx.fillRect(325,115,120,110);ctx.fillStyle="#302a38";ctx.fillRect(365,175,40,75);
+ctx.fillStyle="#6f5140";ctx.fillRect(760,70,150,100);ctx.fillStyle="#9a6b4e";ctx.fillRect(780,90,110,80);
+ctx.fillStyle="#4d334a";ctx.fillRect(965,45,70,90);ctx.fillStyle="#d2bd68";ctx.fillRect(980,65,40,50);
+ctx.fillStyle="#6e5745";ctx.fillRect(955,170,12,30);ctx.fillStyle="#75a3c9";ctx.beginPath();ctx.arc(960,160,18,0,7);ctx.fill();
+ctx.fillStyle="#8b6cff";ctx.beginPath();ctx.arc(npc.x,npc.y,18,0,7);ctx.fill();ctx.fillStyle="#f0c7a8";ctx.beginPath();ctx.arc(npc.x,npc.y-14,11,0,7);ctx.fill();
+for(const m of world.monsters){ctx.fillStyle="#7d3d4d";ctx.beginPath();ctx.arc(m.x,m.y,m.r,0,7);ctx.fill();ctx.fillStyle="#e66b7b";ctx.fillRect(m.x-12,m.y-25,24,4);ctx.fillStyle="#3d1520";ctx.fillRect(m.x-12,m.y-25,24*(m.hp/m.max),4)}
+ctx.save();ctx.translate(player.x,player.y);ctx.fillStyle=player.hit>0?"#fff":"#5d83e8";ctx.beginPath();ctx.arc(0,0,19,0,7);ctx.fill();ctx.fillStyle="#f0c7a8";ctx.beginPath();ctx.arc(0,-15,11,0,7);ctx.fill();ctx.fillStyle="#27213b";ctx.fillRect(-10,-25,20,7);ctx.restore();
+ctx.fillStyle="#fff";ctx.font="bold 14px system-ui";ctx.fillText("LYRA",npc.x-20,npc.y-32);ctx.fillText("GUILDE",770,62);if(S.stage>=4)ctx.fillText("FORÊT →",970,145)}
+function loop(t){let dt=Math.min(.035,(t-last)/1000||0);last=t;if(running){move(dt);enemyAI(dt);if(player.attackCd>0)player.attackCd-=dt;if(player.hit>0)player.hit-=dt;if(msgTimer>0){msgTimer-=dt;if(msgTimer<=0)document.getElementById("msg").style.display="none"}if(world.monsters.length<5&&S.stage>=2)world.spawn+=dt;if(world.spawn>3){world.spawn=0;spawnMonster(700+Math.random()*300,200+Math.random()*400)}updateHud()}draw();requestAnimationFrame(loop)}
+document.addEventListener("keydown",e=>{keys[e.key]=true;if(e.key===" "){e.preventDefault();attack()}if(e.key.toLowerCase()==="e")interact();if(e.key.toLowerCase()==="p")potion()});
+document.addEventListener("keyup",e=>keys[e.key]=false);
+document.querySelectorAll("[data-key]").forEach(b=>{b.addEventListener("pointerdown",e=>{e.preventDefault();keys[b.dataset.key]=true});["pointerup","pointercancel","pointerleave"].forEach(ev=>b.addEventListener(ev,()=>keys[b.dataset.key]=false))});
+document.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("pointerdown",()=>({attack,potion,interact}[b.dataset.action])()));
+document.getElementById("startBtn").onclick=()=>{document.getElementById("start").style.display="none";running=true;resetWorld();updateHud();note("Bienvenue à Aren. Retrouve Lyra près de la place du village.")};
+updateHud();requestAnimationFrame(loop);
 </script>
 </body>
 </html>
